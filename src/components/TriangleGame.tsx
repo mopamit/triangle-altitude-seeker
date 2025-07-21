@@ -253,11 +253,11 @@ const TriangleGame: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Create futuristic gradient background
+    // Create light gradient background
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, 'hsl(220, 30%, 8%)');
-    gradient.addColorStop(0.5, 'hsl(220, 25%, 12%)');
-    gradient.addColorStop(1, 'hsl(220, 30%, 8%)');
+    gradient.addColorStop(0, 'hsl(210, 20%, 98%)');
+    gradient.addColorStop(0.5, 'hsl(210, 15%, 95%)');
+    gradient.addColorStop(1, 'hsl(210, 20%, 98%)');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
@@ -296,7 +296,7 @@ const TriangleGame: React.FC = () => {
     ctx.fillStyle = triangleGradient;
     ctx.fill();
     
-    ctx.strokeStyle = 'hsl(200, 100%, 80%)';
+    ctx.strokeStyle = 'hsl(220, 60%, 30%)';
     ctx.lineWidth = 3;
     ctx.stroke();
 
@@ -619,23 +619,23 @@ const TriangleGame: React.FC = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 relative">
-      {/* Particles */}
+      {/* Star Confetti Particles */}
       {particles.map(particle => (
         <div
           key={particle.id}
-          className={`fixed pointer-events-none text-2xl z-50 animate-bounce`}
+          className="fixed pointer-events-none text-3xl z-50 animate-bounce"
           style={{ left: particle.x, top: particle.y }}
         >
-          {particle.type === 'perfect' ? '🌟' : '🎯'}
+          ⭐
         </div>
       ))}
 
       <Card className="shadow-game hover:shadow-glow transition-all duration-500 animate-fade-in">
-        <CardHeader className="text-center bg-gradient-hero rounded-t-xl">
+        <CardHeader className="text-center rounded-t-xl">
           <CardTitle className="game-header text-3xl sm:text-4xl font-bold mb-3">
             🔺 משחק הגובה במשולש 🔺
           </CardTitle>
-          <p className="text-white/90 text-lg font-medium">
+          <p className="text-muted-foreground text-lg font-medium">
             מצא את הקו שהוא הגובה במשולש • רמה: {gameState.difficulty === 'hard' ? 'קשה' : gameState.difficulty === 'medium' ? 'בינוני' : 'קל'}
           </p>
         </CardHeader>

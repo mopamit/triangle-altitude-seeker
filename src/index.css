@@ -7,52 +7,52 @@
 
 @layer base {
   :root {
-    /* Enhanced futuristic theme colors */
-    --background: 220 25% 6%;
-    --foreground: 210 40% 95%;
+    /* Enhanced theme with lighter backgrounds */
+    --background: 210 15% 92%;
+    --foreground: 220 40% 15%;
 
-    --card: 220 30% 8%;
-    --card-foreground: 210 40% 92%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 40% 15%;
 
-    --popover: 220 30% 8%;
-    --popover-foreground: 210 40% 92%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 40% 15%;
 
     /* Futuristic primary colors - electric blue */
     --primary: 200 100% 60%;
-    --primary-foreground: 220 30% 8%;
+    --primary-foreground: 0 0% 100%;
     --primary-hover: 200 100% 65%;
     --primary-light: 200 100% 90%;
     --primary-glow: 200 100% 75%;
 
     /* Success colors - neon green */
     --success: 140 90% 55%;
-    --success-foreground: 220 30% 8%;
+    --success-foreground: 0 0% 100%;
     --success-light: 140 90% 92%;
     --success-glow: 140 90% 70%;
 
     /* Warning colors - electric orange */
     --warning: 25 100% 60%;
-    --warning-foreground: 220 30% 8%;
+    --warning-foreground: 0 0% 100%;
     --warning-light: 25 100% 92%;
     --warning-glow: 25 100% 75%;
 
     /* Error colors - neon red */
     --error: 0 100% 65%;
-    --error-foreground: 220 30% 8%;
+    --error-foreground: 0 0% 100%;
     --error-light: 0 100% 92%;
     --error-glow: 0 100% 75%;
 
     /* Perfect answers - cyber purple */
     --perfect: 280 100% 70%;
-    --perfect-foreground: 220 30% 8%;
+    --perfect-foreground: 0 0% 100%;
     --perfect-light: 280 100% 95%;
     --perfect-glow: 280 100% 85%;
 
-    --secondary: 220 20% 15%;
-    --secondary-foreground: 210 40% 90%;
+    --secondary: 210 15% 88%;
+    --secondary-foreground: 220 40% 15%;
 
-    --muted: 220 20% 12%;
-    --muted-foreground: 220 15% 65%;
+    --muted: 210 15% 90%;
+    --muted-foreground: 220 15% 45%;
 
     --accent: 200 100% 20%;
     --accent-foreground: 200 100% 90%;
@@ -81,7 +81,7 @@
     --gradient-error: linear-gradient(135deg, hsl(0 100% 65%), hsl(10 100% 70%));
     --gradient-perfect: linear-gradient(135deg, hsl(280 100% 70%), hsl(260 100% 80%));
     --gradient-hero: linear-gradient(135deg, hsl(200 100% 60%), hsl(280 100% 70%), hsl(140 90% 55%));
-    --gradient-card: linear-gradient(135deg, hsl(220 30% 8%), hsl(220 25% 12%));
+    --gradient-card: linear-gradient(135deg, hsl(0, 0%, 100%), hsl(210, 15%, 96%));
     
     /* Animated cyber gradients */
     --gradient-rainbow: linear-gradient(45deg, 
@@ -108,14 +108,18 @@
 
     --radius: 0.75rem;
 
-    --sidebar-background: 220 30% 8%;
-    --sidebar-foreground: 210 40% 90%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 40% 15%;
     --sidebar-primary: 200 100% 60%;
-    --sidebar-primary-foreground: 220 30% 8%;
-    --sidebar-accent: 220 25% 12%;
-    --sidebar-accent-foreground: 210 40% 90%;
-    --sidebar-border: 220 20% 18%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 15% 90%;
+    --sidebar-accent-foreground: 220 40% 15%;
+    --sidebar-border: 210 15% 85%;
     --sidebar-ring: 200 100% 60%;
+
+    /* Header colors - dark blue background with yellow text */
+    --header-bg: 220 60% 20%;
+    --header-text: 45 100% 60%;
   }
 
   .dark {
@@ -326,13 +330,11 @@
   }
 
   .game-header {
-    @apply text-center mb-8 font-bold;
-    background: var(--gradient-hero);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: gradient-shift 3s ease-in-out infinite;
-    text-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+    @apply text-center mb-8 font-bold px-6 py-4 rounded-xl;
+    background: hsl(var(--header-bg));
+    color: hsl(var(--header-text));
+    border: 2px solid hsl(var(--header-bg));
+    box-shadow: 0 4px 15px hsl(var(--header-bg) / 0.3);
   }
 
   /* Enhanced particle effects */
