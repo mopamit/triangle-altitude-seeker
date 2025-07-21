@@ -117,9 +117,10 @@
     --sidebar-border: 210 15% 85%;
     --sidebar-ring: 200 100% 60%;
 
-    /* Header colors - dark blue background with yellow text */
-    --header-bg: 220 60% 20%;
-    --header-text: 45 100% 60%;
+    /* Header colors - cyan and white theme */
+    --header-bg: linear-gradient(135deg, hsl(180, 100%, 50%), hsl(200, 100%, 60%));
+    --header-text: 0 0% 100%;
+    --header-border: 180 100% 40%;
   }
 
   .dark {
@@ -331,10 +332,10 @@
 
   .game-header {
     @apply text-center mb-8 font-bold px-6 py-4 rounded-xl;
-    background: hsl(var(--header-bg));
+    background: var(--header-bg);
     color: hsl(var(--header-text));
-    border: 2px solid hsl(var(--header-bg));
-    box-shadow: 0 4px 15px hsl(var(--header-bg) / 0.3);
+    border: 2px solid hsl(var(--header-border));
+    box-shadow: 0 4px 15px hsl(var(--header-border) / 0.3);
   }
 
   /* Enhanced particle effects */
@@ -588,6 +589,28 @@
   }
 }
 
+@keyframes falling-stars {
+  0% {
+    opacity: 1;
+    transform: translateY(-100vh) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100vh) rotate(360deg);
+  }
+}
+
+@keyframes confetti-fall {
+  0% {
+    opacity: 1;
+    transform: translateY(-20px) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(200px) rotate(720deg);
+  }
+}
+
 /* Enhanced animation classes */
 .animate-bounce-in {
   animation: bounce-in 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -599,4 +622,12 @@
 
 .animate-cyber-glow {
   animation: border-glow 2s ease-in-out infinite alternate;
+}
+
+.animate-falling-stars {
+  animation: falling-stars 3s linear infinite;
+}
+
+.animate-confetti-fall {
+  animation: confetti-fall 3s ease-out forwards;
 }

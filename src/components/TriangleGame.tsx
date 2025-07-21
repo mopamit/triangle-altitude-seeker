@@ -68,6 +68,8 @@ const TriangleGame: React.FC = () => {
   const [messageType, setMessageType] = useState<'default' | 'success' | 'warning' | 'error' | 'perfect'>('default');
   const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; type: string }>>([]);
   const [showDifficultySelector, setShowDifficultySelector] = useState(true);
+  const [showFallingStars, setShowFallingStars] = useState(false);
+  const [fallingStars, setFallingStars] = useState<Array<{ id: number; x: number; delay: number }>>([]);
 
   const Point = (x: number, y: number): Point => ({ x, y });
   const Line = (p1: Point, p2: Point, isAltitude = false): Line => ({ 
@@ -345,10 +347,10 @@ const TriangleGame: React.FC = () => {
   }, [draw]);
 
   const createParticles = (x: number, y: number, type: 'success' | 'perfect') => {
-    const newParticles = Array.from({ length: type === 'perfect' ? 12 : 6 }, (_, i) => ({
+    const newParticles = Array.from({ length: type === 'perfect' ? 15 : 8 }, (_, i) => ({
       id: Date.now() + i,
-      x: x + (Math.random() - 0.5) * 100,
-      y: y + (Math.random() - 0.5) * 100,
+      x: Math.random() * window.innerWidth, // Spread across full width
+      y: Math.random() * window.innerHeight * 0.3, // Top third of screen
       type
     }));
     
@@ -357,7 +359,7 @@ const TriangleGame: React.FC = () => {
     // Remove particles after animation
     setTimeout(() => {
       setParticles(prev => prev.filter(p => !newParticles.find(np => np.id === p.id)));
-    }, 2000);
+    }, 3000);
   };
 
   const startGameWithDifficulty = (difficulty: 'easy' | 'medium' | 'hard') => {
@@ -438,6 +440,21 @@ const TriangleGame: React.FC = () => {
     const stars = calculateStars();
     setGameState(prev => ({ ...prev, gameOver: true, timerActive: false, stars }));
     
+    // Show falling stars animation
+    setShowFallingStars(true);
+    const stars_array = Array.from({ length: 20 }, (_, i) => ({
+      id: Date.now() + i,
+      x: Math.random() * window.innerWidth,
+      delay: Math.random() * 2000
+    }));
+    setFallingStars(stars_array);
+    
+    // Remove falling stars after animation
+    setTimeout(() => {
+      setShowFallingStars(false);
+      setFallingStars([]);
+    }, 5000);
+    
     const difficultyText = gameState.difficulty === 'hard' ? 'קשה' : 
                           gameState.difficulty === 'medium' ? 'בינוני' : 'קל';
     
@@ -486,16 +503,8 @@ const TriangleGame: React.FC = () => {
         showRightAngle: true 
       }));
       
-      // Create particles at the canvas center
-      const canvas = canvasRef.current;
-      if (canvas) {
-        const rect = canvas.getBoundingClientRect();
-        createParticles(
-          rect.left + canvas.width / 2, 
-          rect.top + canvas.height / 2, 
-          isPerfectStreak ? 'perfect' : 'success'
-        );
-      }
+      // Create particles spread across the screen instead of canvas center
+      createParticles(0, 0, isPerfectStreak ? 'perfect' : 'success');
       
       setTimeout(nextRound, 2000);
     } else {
@@ -623,8 +632,23 @@ const TriangleGame: React.FC = () => {
       {particles.map(particle => (
         <div
           key={particle.id}
-          className="fixed pointer-events-none text-3xl z-50 animate-bounce"
+          className="fixed pointer-events-none text-4xl z-50 animate-confetti-fall"
           style={{ left: particle.x, top: particle.y }}
+        >
+          ⭐
+        </div>
+      ))}
+
+      {/* Falling Stars at End Game */}
+      {showFallingStars && fallingStars.map(star => (
+        <div
+          key={star.id}
+          className="fixed pointer-events-none text-6xl z-50 animate-falling-stars"
+          style={{ 
+            left: star.x, 
+            top: 0,
+            animationDelay: `${star.delay}ms`
+          }}
         >
           ⭐
         </div>
@@ -715,8 +739,10 @@ const TriangleGame: React.FC = () => {
             )}
           </div>
 
-          <div className={`min-h-[3rem] text-xl font-medium flex items-center justify-center text-center px-4 py-2 rounded-lg transition-all duration-300 ${getMessageClasses()}`}>
-            {message}
+          <div className="fixed inset-0 flex items-center justify-center z-40 pointer-events-none">
+            <div className={`text-4xl font-bold px-8 py-6 rounded-2xl shadow-2xl border-4 transition-all duration-500 ${getMessageClasses()}`}>
+              {message}
+            </div>
           </div>
 
           {gameState.gameOver && (
