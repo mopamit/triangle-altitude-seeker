@@ -85,7 +85,7 @@ const TriangleGame: React.FC = () => {
 
   const generateObtuseOrAcuteTriangle = (): Triangle => {
     const canvas = canvasRef.current!;
-    const padding = 80;
+    const padding = 120; // Increased padding
     const w = canvas.width;
     const h = canvas.height;
     let A: Point, B: Point, C: Point, area: number;
@@ -95,14 +95,14 @@ const TriangleGame: React.FC = () => {
       B = Point(padding + Math.random() * (w - 2 * padding), padding + Math.random() * (h - 2 * padding));
       C = Point(padding + Math.random() * (w - 2 * padding), padding + Math.random() * (h - 2 * padding));
       area = Math.abs(A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y)) / 2;
-    } while (area < 15000);
+    } while (area < 12000); // Reduced minimum area
     
     return { A, B, C };
   };
 
   const generateRightAngledTriangle = (): Triangle => {
     const canvas = canvasRef.current!;
-    const padding = 80;
+    const padding = 120; // Increased padding
     const w = canvas.width;
     const h = canvas.height;
     let A: Point, B: Point, C: Point, area: number, isOutOfBounds: boolean;
@@ -739,10 +739,8 @@ const TriangleGame: React.FC = () => {
             )}
           </div>
 
-          <div className="fixed inset-0 flex items-center justify-center z-40 pointer-events-none">
-            <div className={`text-4xl font-bold px-8 py-6 rounded-2xl shadow-2xl border-4 transition-all duration-500 ${getMessageClasses()}`}>
-              {message}
-            </div>
+          <div className={`min-h-[3rem] text-lg font-medium flex items-center justify-center text-center px-4 py-2 rounded-lg transition-all duration-300 ${getMessageClasses()} mb-4`}>
+            {message}
           </div>
 
           {gameState.gameOver && (
