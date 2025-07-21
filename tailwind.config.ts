@@ -27,7 +27,9 @@ export default {
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))',
-					hover: 'hsl(var(--primary-hover))'
+					hover: 'hsl(var(--primary-hover))',
+					light: 'hsl(var(--primary-light))',
+					glow: 'hsl(var(--primary-glow))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -56,24 +58,35 @@ export default {
 				success: {
 					DEFAULT: 'hsl(var(--success))',
 					foreground: 'hsl(var(--success-foreground))',
-					light: 'hsl(var(--success-light))'
+					light: 'hsl(var(--success-light))',
+					glow: 'hsl(var(--success-glow))'
 				},
 				warning: {
 					DEFAULT: 'hsl(var(--warning))',
 					foreground: 'hsl(var(--warning-foreground))',
-					light: 'hsl(var(--warning-light))'
+					light: 'hsl(var(--warning-light))',
+					glow: 'hsl(var(--warning-glow))'
 				},
 				error: {
 					DEFAULT: 'hsl(var(--error))',
 					foreground: 'hsl(var(--error-foreground))',
-					light: 'hsl(var(--error-light))'
+					light: 'hsl(var(--error-light))',
+					glow: 'hsl(var(--error-glow))'
+				},
+				perfect: {
+					DEFAULT: 'hsl(var(--perfect))',
+					foreground: 'hsl(var(--perfect-foreground))',
+					light: 'hsl(var(--perfect-light))',
+					glow: 'hsl(var(--perfect-glow))'
 				},
 				'game-line-1': 'hsl(var(--game-line-1))',
 				'game-line-2': 'hsl(var(--game-line-2))',
 				'game-line-3': 'hsl(var(--game-line-3))',
+				'game-line-4': 'hsl(var(--game-line-4))',
 				'game-altitude': 'hsl(var(--game-altitude))',
 				'game-extension': 'hsl(var(--game-extension))',
 				'game-triangle': 'hsl(var(--game-triangle))',
+				'game-right-angle': 'hsl(var(--game-right-angle))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -88,11 +101,18 @@ export default {
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
 				'gradient-success': 'var(--gradient-success)',
-				'gradient-warning': 'var(--gradient-warning)'
+				'gradient-warning': 'var(--gradient-warning)',
+				'gradient-error': 'var(--gradient-error)',
+				'gradient-perfect': 'var(--gradient-perfect)',
+				'gradient-hero': 'var(--gradient-hero)',
+				'gradient-rainbow': 'var(--gradient-rainbow)'
 			},
 			boxShadow: {
 				'soft': 'var(--shadow-soft)',
-				'game': 'var(--shadow-game)'
+				'game': 'var(--shadow-game)',
+				'success': 'var(--shadow-success)',
+				'perfect': 'var(--shadow-perfect)',
+				'glow': 'var(--shadow-glow)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -115,11 +135,81 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(10px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
+				},
+				'scale-in': {
+					'0%': {
+						transform: 'scale(0.95)',
+						opacity: '0'
+					},
+					'100%': {
+						transform: 'scale(1)',
+						opacity: '1'
+					}
+				},
+				'bounce-in': {
+					'0%': {
+						transform: 'scale(0.3)',
+						opacity: '0'
+					},
+					'50%': {
+						transform: 'scale(1.05)',
+						opacity: '0.8'
+					},
+					'70%': {
+						transform: 'scale(0.9)',
+						opacity: '0.9'
+					},
+					'100%': {
+						transform: 'scale(1)',
+						opacity: '1'
+					}
+				},
+				'float': {
+					'0%, 100%': {
+						transform: 'translateY(0px)'
+					},
+					'50%': {
+						transform: 'translateY(-10px)'
+					}
+				},
+				'glow-pulse': {
+					'0%, 100%': {
+						boxShadow: '0 0 5px currentColor'
+					},
+					'50%': {
+						boxShadow: '0 0 20px currentColor, 0 0 30px currentColor'
+					}
+				},
+				'shake': {
+					'0%, 100%': { transform: 'translateX(0)' },
+					'10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-3px)' },
+					'20%, 40%, 60%, 80%': { transform: 'translateX(3px)' }
+				},
+				'rainbow': {
+					'0%': { filter: 'hue-rotate(0deg)' },
+					'100%': { filter: 'hue-rotate(360deg)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.5s ease-out',
+				'scale-in': 'scale-in 0.3s ease-out',
+				'bounce-in': 'bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+				'float': 'float 3s ease-in-out infinite',
+				'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
+				'shake': 'shake 0.6s ease-in-out',
+				'rainbow': 'rainbow 2s linear infinite'
 			}
 		}
 	},

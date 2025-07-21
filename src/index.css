@@ -7,9 +7,9 @@
 
 @layer base {
   :root {
-    /* Educational theme colors */
-    --background: 220 30% 97%;
-    --foreground: 220 40% 15%;
+    /* Enhanced educational theme colors */
+    --background: 220 30% 98%;
+    --foreground: 220 40% 10%;
 
     --card: 0 0% 100%;
     --card-foreground: 220 40% 15%;
@@ -17,25 +17,36 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 40% 15%;
 
-    /* Educational primary - deep blue */
-    --primary: 213 94% 68%;
+    /* Beautiful primary colors - vibrant blue */
+    --primary: 213 94% 65%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 213 94% 60%;
+    --primary-hover: 213 94% 58%;
+    --primary-light: 213 94% 90%;
+    --primary-glow: 213 94% 75%;
 
-    /* Success green for correct answers */
-    --success: 142 76% 36%;
+    /* Success colors - vibrant green */
+    --success: 142 85% 45%;
     --success-foreground: 0 0% 100%;
-    --success-light: 142 76% 85%;
+    --success-light: 142 85% 92%;
+    --success-glow: 142 85% 65%;
 
-    /* Warning orange for incorrect attempts */
-    --warning: 25 95% 53%;
+    /* Warning colors - warm orange */
+    --warning: 28 100% 58%;
     --warning-foreground: 0 0% 100%;
-    --warning-light: 25 95% 85%;
+    --warning-light: 28 100% 92%;
+    --warning-glow: 28 100% 75%;
 
-    /* Error red for final mistakes */
-    --error: 0 84% 60%;
+    /* Error colors - vibrant red */
+    --error: 0 91% 62%;
     --error-foreground: 0 0% 100%;
-    --error-light: 0 84% 85%;
+    --error-light: 0 91% 92%;
+    --error-glow: 0 91% 75%;
+
+    /* Perfect answers - magical purple */
+    --perfect: 270 95% 70%;
+    --perfect-foreground: 0 0% 100%;
+    --perfect-light: 270 95% 95%;
+    --perfect-glow: 270 95% 85%;
 
     --secondary: 220 14% 96%;
     --secondary-foreground: 220 40% 15%;
@@ -53,22 +64,39 @@
     --input: 220 13% 91%;
     --ring: 213 94% 68%;
 
-    /* Game specific colors */
-    --game-line-1: 213 94% 68%;  /* Blue */
-    --game-line-2: 0 84% 60%;    /* Red */
-    --game-line-3: 142 76% 36%;  /* Green */
-    --game-altitude: 142 76% 36%; /* Green for correct altitude */
-    --game-extension: 220 9% 46%; /* Gray for extensions */
+    /* Game specific colors - enhanced */
+    --game-line-1: 213 94% 65%;  /* Vibrant Blue */
+    --game-line-2: 0 91% 62%;    /* Vibrant Red */
+    --game-line-3: 142 85% 45%;  /* Vibrant Green */
+    --game-line-4: 270 95% 70%;  /* Purple */
+    --game-altitude: 142 85% 45%; /* Green for correct altitude */
+    --game-extension: 220 15% 55%; /* Darker gray for extensions */
     --game-triangle: 220 40% 20%; /* Dark for triangle */
+    --game-right-angle: 270 95% 70%; /* Purple for right angle indicator */
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(213 94% 68%), hsl(213 94% 80%));
-    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 50%));
-    --gradient-warning: linear-gradient(135deg, hsl(25 95% 53%), hsl(25 95% 65%));
+    /* Enhanced gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(213 94% 65%), hsl(213 94% 80%));
+    --gradient-success: linear-gradient(135deg, hsl(142 85% 45%), hsl(142 85% 65%));
+    --gradient-warning: linear-gradient(135deg, hsl(28 100% 58%), hsl(28 100% 75%));
+    --gradient-error: linear-gradient(135deg, hsl(0 91% 62%), hsl(0 91% 75%));
+    --gradient-perfect: linear-gradient(135deg, hsl(270 95% 70%), hsl(270 95% 85%));
+    --gradient-hero: linear-gradient(135deg, hsl(213 94% 65%), hsl(270 95% 70%));
+    
+    /* Animated gradients */
+    --gradient-rainbow: linear-gradient(45deg, 
+      hsl(213 94% 65%), 
+      hsl(270 95% 70%), 
+      hsl(142 85% 45%), 
+      hsl(28 100% 58%), 
+      hsl(0 91% 62%)
+    );
 
-    /* Shadows */
+    /* Enhanced shadows with colors */
     --shadow-soft: 0 4px 6px -1px hsl(220 40% 15% / 0.1), 0 2px 4px -1px hsl(220 40% 15% / 0.06);
-    --shadow-game: 0 10px 25px -3px hsl(213 94% 68% / 0.1), 0 4px 6px -2px hsl(213 94% 68% / 0.05);
+    --shadow-game: 0 10px 25px -3px hsl(213 94% 65% / 0.15), 0 4px 6px -2px hsl(213 94% 65% / 0.08);
+    --shadow-success: 0 10px 25px -3px hsl(142 85% 45% / 0.2), 0 4px 6px -2px hsl(142 85% 45% / 0.1);
+    --shadow-perfect: 0 15px 35px -5px hsl(270 95% 70% / 0.3), 0 8px 15px -3px hsl(270 95% 70% / 0.15);
+    --shadow-glow: 0 0 30px hsl(213 94% 65% / 0.3);
 
     --radius: 0.75rem;
 
@@ -146,27 +174,221 @@
 
 @layer components {
   .game-button {
-    @apply bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-8 rounded-lg transition-all duration-200 ease-in-out transform hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-md;
-  }
-
-  .success-message {
-    @apply text-success font-bold;
-  }
-
-  .warning-message {
-    @apply text-warning font-bold;
-  }
-
-  .error-message {
-    @apply text-error font-bold;
-  }
-
-  .game-canvas {
-    @apply bg-card rounded-lg border-2 border-border cursor-pointer transition-shadow duration-200 hover:shadow-lg;
+    @apply bg-primary hover:bg-primary-hover text-primary-foreground font-semibold py-3 px-8 rounded-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg active:translate-y-0 active:shadow-md;
     box-shadow: var(--shadow-game);
   }
 
-  .score-card {
-    @apply bg-card border border-border rounded-lg p-4 shadow-sm;
+  .game-button:hover {
+    box-shadow: var(--shadow-glow);
   }
+
+  .game-button-success {
+    @apply bg-success hover:bg-success-glow text-success-foreground;
+    box-shadow: var(--shadow-success);
+  }
+
+  .game-button-perfect {
+    @apply text-perfect-foreground;
+    background: var(--gradient-perfect);
+    box-shadow: var(--shadow-perfect);
+  }
+
+  .success-message {
+    @apply text-success font-bold animate-bounce;
+  }
+
+  .warning-message {
+    @apply text-warning font-bold animate-pulse;
+  }
+
+  .error-message {
+    @apply text-error font-bold animate-shake;
+  }
+
+  .perfect-message {
+    @apply text-perfect font-bold animate-rainbow;
+  }
+
+  .game-canvas {
+    @apply bg-card rounded-xl border-2 border-border cursor-pointer transition-all duration-300 hover:shadow-xl;
+    box-shadow: var(--shadow-game);
+  }
+
+  .game-canvas:hover {
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-2px);
+  }
+
+  .score-card {
+    @apply bg-card border border-border rounded-xl p-6 shadow-sm transition-all duration-300 hover:shadow-lg;
+  }
+
+  .game-header {
+    @apply text-center mb-8;
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-shift 3s ease-in-out infinite;
+  }
+
+  /* Particle effects */
+  .success-particles {
+    position: absolute;
+    pointer-events: none;
+    animation: particles-float 2s ease-out forwards;
+  }
+
+  .perfect-particles {
+    position: absolute;
+    pointer-events: none;
+    animation: particles-explosion 1.5s ease-out forwards;
+  }
+
+  /* Right angle indicator */
+  .right-angle-indicator {
+    position: absolute;
+    pointer-events: none;
+    animation: right-angle-appear 1s ease-out forwards;
+  }
+
+  /* Game results animations */
+  .result-correct {
+    animation: result-success 0.8s ease-out forwards;
+  }
+
+  .result-incorrect {
+    animation: result-error 0.6s ease-out forwards;
+  }
+
+  .result-perfect {
+    animation: result-perfect 1.2s ease-out forwards;
+  }
+
+  /* Loading animations */
+  .loading-spinner {
+    @apply animate-spin rounded-full border-4 border-primary border-t-transparent;
+  }
+
+  /* Glow effects */
+  .glow-primary {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.5);
+  }
+
+  .glow-success {
+    box-shadow: 0 0 20px hsl(var(--success) / 0.5);
+  }
+
+  .glow-perfect {
+    box-shadow: 0 0 30px hsl(var(--perfect) / 0.6);
+  }
+}
+
+/* Enhanced keyframe animations */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes particles-float {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(0);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-20px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.5);
+  }
+}
+
+@keyframes particles-explosion {
+  0% {
+    opacity: 1;
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.2) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.3) rotate(360deg);
+  }
+}
+
+@keyframes right-angle-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-90deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.1) rotate(0deg);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes result-success {
+  0% {
+    transform: scale(1);
+    background-color: transparent;
+  }
+  50% {
+    transform: scale(1.05);
+    background-color: hsl(var(--success-light));
+  }
+  100% {
+    transform: scale(1);
+    background-color: transparent;
+  }
+}
+
+@keyframes result-error {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+@keyframes result-perfect {
+  0% {
+    transform: scale(1);
+    filter: hue-rotate(0deg);
+  }
+  25% {
+    transform: scale(1.02);
+    filter: hue-rotate(90deg);
+  }
+  50% {
+    transform: scale(1.05);
+    filter: hue-rotate(180deg);
+  }
+  75% {
+    transform: scale(1.02);
+    filter: hue-rotate(270deg);
+  }
+  100% {
+    transform: scale(1);
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes animate-shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+  20%, 40%, 60%, 80% { transform: translateX(3px); }
+}
+
+@keyframes animate-rainbow {
+  0% { color: hsl(var(--perfect)); }
+  25% { color: hsl(var(--success)); }
+  50% { color: hsl(var(--primary)); }
+  75% { color: hsl(var(--warning)); }
+  100% { color: hsl(var(--perfect)); }
 }

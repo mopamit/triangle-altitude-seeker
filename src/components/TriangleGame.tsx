@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Trophy, Star, Target, Zap } from 'lucide-react';
 
 interface Point {
   x: number;
@@ -30,10 +31,13 @@ interface GameState {
   currentTriangle: Triangle | null;
   lines: Line[];
   isProcessingClick: boolean;
+  consecutiveCorrect: number;
+  showRightAngle: boolean;
 }
 
 const TriangleGame: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const rightAngleRef = useRef<HTMLDivElement>(null);
   const [gameState, setGameState] = useState<GameState>({
     round: 0,
     score: 0,
@@ -43,10 +47,13 @@ const TriangleGame: React.FC = () => {
     currentTriangle: null,
     lines: [],
     isProcessingClick: false,
+    consecutiveCorrect: 0,
+    showRightAngle: false,
   });
   
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState<'default' | 'success' | 'warning' | 'error'>('default');
+  const [messageType, setMessageType] = useState<'default' | 'success' | 'warning' | 'error' | 'perfect'>('default');
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; type: string }>>([]);
 
   const Point = (x: number, y: number): Point => ({ x, y });
   const Line = (p1: Point, p2: Point, isAltitude = false): Line => ({ 
@@ -189,6 +196,38 @@ const TriangleGame: React.FC = () => {
     return lines;
   };
 
+  const drawRightAngleIndicator = (ctx: CanvasRenderingContext2D, foot: Point, vertex: Point, side1: Point, side2: Point) => {
+    if (!gameState.showRightAngle) return;
+
+    const size = 20;
+    const v1 = { x: side1.x - foot.x, y: side1.y - foot.y };
+    const v2 = { x: side2.x - foot.x, y: side2.y - foot.y };
+    
+    const len1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+    const len2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+    
+    if (len1 === 0 || len2 === 0) return;
+    
+    const u1 = { x: v1.x / len1, y: v1.y / len1 };
+    const u2 = { x: v2.x / len2, y: v2.y / len2 };
+    
+    const corner1 = { x: foot.x + u1.x * size, y: foot.y + u1.y * size };
+    const corner2 = { x: foot.x + u2.x * size, y: foot.y + u2.y * size };
+    const corner3 = { x: corner1.x + u2.x * size, y: corner1.y + u2.y * size };
+    
+    ctx.beginPath();
+    ctx.moveTo(corner1.x, corner1.y);
+    ctx.lineTo(corner3.x, corner3.y);
+    ctx.lineTo(corner2.x, corner2.y);
+    ctx.strokeStyle = '#8b5cf6';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    
+    // Fill the right angle square
+    ctx.fillStyle = 'rgba(139, 92, 246, 0.2)';
+    ctx.fill();
+  };
+
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -196,66 +235,119 @@ const TriangleGame: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Create gradient background
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, '#f8fafc');
+    gradient.addColorStop(1, '#e2e8f0');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     if (gameState.gameOver || !gameState.currentTriangle) return;
 
     const { A, B, C } = gameState.currentTriangle;
 
-    // Draw side extensions
+    // Draw side extensions with enhanced styling
     gameState.lines.forEach(line => {
       if (line.extension) {
         ctx.beginPath();
         ctx.moveTo(line.extension.from.x, line.extension.from.y);
         ctx.lineTo(line.extension.to.x, line.extension.to.y);
-        ctx.strokeStyle = '#6b7280';
+        ctx.strokeStyle = '#64748b';
         ctx.lineWidth = 2;
-        ctx.setLineDash([5, 5]);
+        ctx.setLineDash([8, 4]);
         ctx.stroke();
       }
     });
     ctx.setLineDash([]);
 
-    // Draw triangle
+    // Draw triangle with enhanced styling
     ctx.beginPath();
     ctx.moveTo(A.x, A.y);
     ctx.lineTo(B.x, B.y);
     ctx.lineTo(C.x, C.y);
     ctx.closePath();
-    ctx.strokeStyle = '#1f2937';
-    ctx.lineWidth = 3;
+    
+    // Triangle fill with subtle gradient
+    const triangleGradient = ctx.createLinearGradient(
+      Math.min(A.x, B.x, C.x), Math.min(A.y, B.y, C.y),
+      Math.max(A.x, B.x, C.x), Math.max(A.y, B.y, C.y)
+    );
+    triangleGradient.addColorStop(0, 'rgba(59, 130, 246, 0.05)');
+    triangleGradient.addColorStop(1, 'rgba(59, 130, 246, 0.1)');
+    ctx.fillStyle = triangleGradient;
+    ctx.fill();
+    
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 4;
     ctx.stroke();
 
-    // Draw lines
-    const lineColors = ['#3b82f6', '#ef4444', '#10b981'];
+    // Draw lines with enhanced colors and effects
+    const lineColors = ['#3b82f6', '#ef4444', '#10b981', '#8b5cf6'];
     gameState.lines.forEach((line, index) => {
       if (line.clicked) {
-        ctx.strokeStyle = '#9ca3af';
+        ctx.strokeStyle = '#94a3b8';
         ctx.lineWidth = 2;
-        ctx.setLineDash([5, 5]);
+        ctx.setLineDash([8, 4]);
       } else {
         ctx.strokeStyle = lineColors[index % lineColors.length];
-        ctx.lineWidth = 2.5;
+        ctx.lineWidth = 3;
         ctx.setLineDash([]);
+        
+        // Add glow effect for unclicked lines
+        ctx.shadowColor = lineColors[index % lineColors.length];
+        ctx.shadowBlur = 8;
       }
+      
       ctx.beginPath();
       ctx.moveTo(line.p1.x, line.p1.y);
       ctx.lineTo(line.p2.x, line.p2.y);
       ctx.stroke();
+      ctx.shadowBlur = 0;
     });
     ctx.setLineDash([]);
+
+    // Draw right angle indicator if needed
+    if (gameState.showRightAngle) {
+      const altitudeLine = gameState.lines.find(l => l.isAltitude);
+      if (altitudeLine) {
+        // Find the triangle sides that form the right angle
+        const vertices = [A, B, C];
+        const foot = altitudeLine.p2;
+        const vertex = altitudeLine.p1;
+        
+        // Simple implementation - you can enhance this based on your triangle structure
+        drawRightAngleIndicator(ctx, foot, vertex, A, B);
+      }
+    }
   }, [gameState]);
 
   useEffect(() => {
     draw();
   }, [draw]);
 
+  const createParticles = (x: number, y: number, type: 'success' | 'perfect') => {
+    const newParticles = Array.from({ length: type === 'perfect' ? 12 : 6 }, (_, i) => ({
+      id: Date.now() + i,
+      x: x + (Math.random() - 0.5) * 100,
+      y: y + (Math.random() - 0.5) * 100,
+      type
+    }));
+    
+    setParticles(prev => [...prev, ...newParticles]);
+    
+    // Remove particles after animation
+    setTimeout(() => {
+      setParticles(prev => prev.filter(p => !newParticles.find(np => np.id === p.id)));
+    }, 2000);
+  };
+
   const startGame = () => {
     setGameState(prev => ({
       ...prev,
       round: 0,
       score: 0,
-      gameOver: false
+      gameOver: false,
+      consecutiveCorrect: 0
     }));
     setMessage('');
     nextRound();
@@ -272,7 +364,7 @@ const TriangleGame: React.FC = () => {
       const triangle = generateTriangle();
       const lines = calculateLines(triangle);
 
-      setMessage('בחר את הקו שהוא הגובה');
+      setMessage('בחר את הקו שהוא הגובה במשולש');
       setMessageType('default');
 
       return {
@@ -281,30 +373,70 @@ const TriangleGame: React.FC = () => {
         attempts: 2,
         isProcessingClick: false,
         currentTriangle: triangle,
-        lines: lines
+        lines: lines,
+        showRightAngle: false
       };
     });
   };
 
   const endGame = () => {
     setGameState(prev => ({ ...prev, gameOver: true }));
-    setMessage(`המשחק נגמר! הניקוד הסופי שלך הוא ${gameState.score} מתוך ${gameState.totalRounds}.`);
-    setMessageType('default');
+    const perfectScore = gameState.score === gameState.totalRounds;
+    const goodScore = gameState.score >= gameState.totalRounds * 0.8;
+    
+    if (perfectScore) {
+      setMessage(`🎉 מושלם! קיבלת ${gameState.score}/${gameState.totalRounds}! אתה אמן הגיאומטריה! 🎉`);
+      setMessageType('perfect');
+    } else if (goodScore) {
+      setMessage(`🌟 כל הכבוד! קיבלת ${gameState.score}/${gameState.totalRounds}! תוצאה מעולה! 🌟`);
+      setMessageType('success');
+    } else {
+      setMessage(`המשחק נגמר! הניקוד הסופי שלך הוא ${gameState.score}/${gameState.totalRounds}. נסה שוב!`);
+      setMessageType('default');
+    }
   };
 
   const processGuess = (line: Line) => {
     setGameState(prev => ({ ...prev, isProcessingClick: true }));
 
     if (line.isAltitude) {
-      setMessage('כל הכבוד! תשובה נכונה!');
-      setMessageType('success');
-      setGameState(prev => ({ ...prev, score: prev.score + 1 }));
-      setTimeout(nextRound, 1500);
+      const newConsecutive = gameState.consecutiveCorrect + 1;
+      const isPerfectStreak = newConsecutive >= 3;
+      
+      if (isPerfectStreak) {
+        setMessage('🔥 רצף מושלם! אתה בלתי ניתן לעצירה! 🔥');
+        setMessageType('perfect');
+      } else {
+        setMessage('🎯 כל הכבוד! תשובה נכונה! 🎯');
+        setMessageType('success');
+      }
+      
+      // Show right angle indicator
+      setGameState(prev => ({ 
+        ...prev, 
+        score: prev.score + 1, 
+        consecutiveCorrect: newConsecutive,
+        showRightAngle: true 
+      }));
+      
+      // Create particles at the canvas center
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const rect = canvas.getBoundingClientRect();
+        createParticles(
+          rect.left + canvas.width / 2, 
+          rect.top + canvas.height / 2, 
+          isPerfectStreak ? 'perfect' : 'success'
+        );
+      }
+      
+      setTimeout(nextRound, 2000);
     } else {
       const newAttempts = gameState.attempts - 1;
+      setGameState(prev => ({ ...prev, consecutiveCorrect: 0 }));
       
       if (newAttempts > 0) {
-        setMessage('טעות... נסה שוב!');
+        setMessage('❌ טעות... נסה שוב! יש לך עוד הזדמנות! ❌');
         setMessageType('warning');
         setGameState(prev => ({
           ...prev,
@@ -313,12 +445,13 @@ const TriangleGame: React.FC = () => {
           lines: prev.lines.map(l => l === line ? { ...l, clicked: true } : l)
         }));
       } else {
-        setMessage('טעות. זו הייתה ההזדמנות האחרונה.');
+        setMessage('💔 טעות. זו הייתה ההזדמנות האחרונה. הקו הנכון מודגש בירוק.');
         setMessageType('error');
         setGameState(prev => ({
           ...prev,
           attempts: 0,
-          lines: prev.lines.map(l => l === line ? { ...l, clicked: true } : l)
+          lines: prev.lines.map(l => l === line ? { ...l, clicked: true } : l),
+          showRightAngle: true
         }));
         
         // Highlight correct answer
@@ -330,16 +463,19 @@ const TriangleGame: React.FC = () => {
           
           const correctLine = gameState.lines.find(l => l.isAltitude);
           if (correctLine) {
-            ctx.strokeStyle = '#16a34a';
-            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 5;
+            ctx.shadowColor = '#10b981';
+            ctx.shadowBlur = 15;
             ctx.beginPath();
             ctx.moveTo(correctLine.p1.x, correctLine.p1.y);
             ctx.lineTo(correctLine.p2.x, correctLine.p2.y);
             ctx.stroke();
+            ctx.shadowBlur = 0;
           }
         }, 100);
         
-        setTimeout(nextRound, 2500);
+        setTimeout(nextRound, 3000);
       }
     }
   };
@@ -357,7 +493,7 @@ const TriangleGame: React.FC = () => {
     );
 
     let clickedLine: Line | null = null;
-    let minDistance = 20;
+    let minDistance = 25;
 
     gameState.lines.forEach(line => {
       if (line.clicked) return;
@@ -391,56 +527,124 @@ const TriangleGame: React.FC = () => {
         return 'warning-message';
       case 'error':
         return 'error-message';
+      case 'perfect':
+        return 'perfect-message';
       default:
         return 'text-foreground';
     }
   };
 
+  const getScoreIcon = () => {
+    const percentage = (gameState.score / Math.max(gameState.round, 1)) * 100;
+    if (percentage === 100) return <Trophy className="w-5 h-5 text-perfect" />;
+    if (percentage >= 80) return <Star className="w-5 h-5 text-success" />;
+    if (percentage >= 60) return <Target className="w-5 h-5 text-primary" />;
+    return <Zap className="w-5 h-5 text-warning" />;
+  };
+
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 sm:p-6">
-      <Card className="shadow-game">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl sm:text-3xl font-bold mb-2">
-            משחק הגובה במשולש
+    <div className="w-full max-w-5xl mx-auto p-4 sm:p-6 relative">
+      {/* Particles */}
+      {particles.map(particle => (
+        <div
+          key={particle.id}
+          className={`fixed pointer-events-none w-3 h-3 rounded-full z-50 ${
+            particle.type === 'perfect' ? 'perfect-particles bg-perfect' : 'success-particles bg-success'
+          }`}
+          style={{ left: particle.x, top: particle.y }}
+        />
+      ))}
+
+      <Card className="shadow-game hover:shadow-glow transition-all duration-500 animate-fade-in">
+        <CardHeader className="text-center bg-gradient-hero rounded-t-xl">
+          <CardTitle className="game-header text-3xl sm:text-4xl font-bold mb-3">
+            🔺 משחק הגובה במשולש 🔺
           </CardTitle>
-          <p className="text-muted-foreground text-lg">
-            מצא את הקו שהוא הגובה במשולש. יש לך שתי הזדמנויות בכל סיבוב.
+          <p className="text-white/90 text-lg font-medium">
+            מצא את הקו שהוא הגובה במשולש • יש לך שתי הזדמנויות בכל סיבוב
           </p>
         </CardHeader>
         
-        <CardContent className="space-y-6">
-          <div className="flex justify-between items-center">
-            <div className="score-card">
-              <div className="text-lg font-semibold">
-                סיבוב: {gameState.round}/{gameState.totalRounds}
+        <CardContent className="space-y-8 p-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="score-card text-center transform hover:scale-105 transition-transform">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Target className="w-5 h-5 text-primary" />
+                <span className="text-sm font-medium text-muted-foreground">סיבוב</span>
+              </div>
+              <div className="text-2xl font-bold text-primary">
+                {gameState.round}/{gameState.totalRounds}
               </div>
             </div>
-            <div className="score-card">
-              <div className="text-lg font-semibold">
-                ניקוד: {gameState.score}
+            
+            <div className="score-card text-center transform hover:scale-105 transition-transform">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                {getScoreIcon()}
+                <span className="text-sm font-medium text-muted-foreground">ניקוד</span>
+              </div>
+              <div className="text-2xl font-bold text-success">
+                {gameState.score}
+              </div>
+            </div>
+            
+            <div className="score-card text-center transform hover:scale-105 transition-transform">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Zap className="w-5 h-5 text-warning" />
+                <span className="text-sm font-medium text-muted-foreground">רצף</span>
+              </div>
+              <div className="text-2xl font-bold text-warning">
+                {gameState.consecutiveCorrect}
               </div>
             </div>
           </div>
 
-          <canvas
-            ref={canvasRef}
-            width={600}
-            height={400}
-            className="game-canvas w-full"
-            onClick={handleCanvasClick}
-          />
+          <div className="relative">
+            <canvas
+              ref={canvasRef}
+              width={600}
+              height={400}
+              className="game-canvas w-full transition-all duration-300"
+              onClick={handleCanvasClick}
+            />
+            
+            {gameState.showRightAngle && (
+              <div className="absolute top-4 right-4 bg-perfect/10 border border-perfect/30 rounded-lg px-3 py-2 animate-bounce-in">
+                <div className="flex items-center gap-2 text-perfect font-medium">
+                  <div className="w-4 h-4 border-2 border-perfect border-r-0 border-t-0"></div>
+                  <span>זווית ישרה (90°)</span>
+                </div>
+              </div>
+            )}
+          </div>
 
-          <div className={`h-10 text-xl font-medium flex items-center justify-center ${getMessageClasses()}`}>
+          <div className={`min-h-[3rem] text-xl font-medium flex items-center justify-center text-center px-4 py-2 rounded-lg transition-all duration-300 ${getMessageClasses()}`}>
             {message}
           </div>
 
           {gameState.gameOver && (
-            <div className="text-center">
+            <div className="text-center animate-scale-in">
               <Button 
                 onClick={startGame}
-                className="game-button"
+                size="lg"
+                className={`${
+                  gameState.score === gameState.totalRounds 
+                    ? 'game-button-perfect animate-rainbow' 
+                    : gameState.score >= gameState.totalRounds * 0.8 
+                    ? 'game-button-success' 
+                    : 'game-button'
+                } transform hover:scale-105 transition-all duration-300`}
               >
-                {gameState.round === 0 ? 'התחל משחק' : 'שחק שוב'}
+                {gameState.round === 0 ? (
+                  <>
+                    <Target className="w-5 h-5 mr-2" />
+                    התחל משחק
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-5 h-5 mr-2" />
+                    שחק שוב
+                  </>
+                )}
               </Button>
             </div>
           )}
