@@ -17,25 +17,13 @@ import {
 import GameLayout from '@/components/GameLayout';
 import ProgressSystem from '@/components/ProgressSystem';
 import { GameConfig, ProgressData } from '@/lib/gameTypes';
+import { useProgress } from '@/hooks/useProgress';
 
 const MainMenu: React.FC = () => {
   const navigate = useNavigate();
   const [showProgress, setShowProgress] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'triangle' | 'quadrilateral' | 'circle'>('all');
-
-  // Mock progress data - במציאות יבוא מ-localStorage או API
-  const [progress] = useState<ProgressData>({
-    totalGamesCompleted: 5,
-    totalStars: 8,
-    averageScore: 75,
-    gameProgress: {
-      'altitude': { completed: true, bestScore: 85, stars: 3, attempts: 3 },
-      'median': { completed: true, bestScore: 70, stars: 2, attempts: 2 },
-      'angle-bisector': { completed: false, bestScore: 0, stars: 0, attempts: 0 },
-      'diagonal': { completed: false, bestScore: 0, stars: 0, attempts: 0 },
-      'circle-center': { completed: false, bestScore: 0, stars: 0, attempts: 0 },
-    }
-  });
+  const { progress, getGameUnlocked } = useProgress();
 
   const gameConfigs: GameConfig[] = [
     {
@@ -56,7 +44,7 @@ const MainMenu: React.FC = () => {
       icon: '📏',
       difficulty: 'medium',
       category: 'triangle',
-      unlocked: progress.gameProgress.altitude.completed,
+      unlocked: getGameUnlocked('median'),
       bestScore: progress.gameProgress.median.bestScore,
       stars: progress.gameProgress.median.stars,
     },
@@ -67,7 +55,7 @@ const MainMenu: React.FC = () => {
       icon: '✂️',
       difficulty: 'hard',
       category: 'triangle',
-      unlocked: progress.gameProgress.median.completed,
+      unlocked: getGameUnlocked('angle-bisector'),
       bestScore: progress.gameProgress['angle-bisector'].bestScore,
       stars: progress.gameProgress['angle-bisector'].stars,
     },
@@ -78,7 +66,7 @@ const MainMenu: React.FC = () => {
       icon: '⬛',
       difficulty: 'medium',
       category: 'quadrilateral',
-      unlocked: progress.gameProgress['angle-bisector'].completed,
+      unlocked: getGameUnlocked('diagonal'),
       bestScore: progress.gameProgress.diagonal.bestScore,
       stars: progress.gameProgress.diagonal.stars,
     },
@@ -89,7 +77,7 @@ const MainMenu: React.FC = () => {
       icon: '⭕',
       difficulty: 'hard',
       category: 'circle',
-      unlocked: progress.gameProgress.diagonal.completed,
+      unlocked: getGameUnlocked('circle-center'),
       bestScore: progress.gameProgress['circle-center'].bestScore,
       stars: progress.gameProgress['circle-center'].stars,
     },

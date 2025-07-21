@@ -5,6 +5,7 @@ import { Trophy, Star, Target, Zap, Clock } from 'lucide-react';
 import DifficultySelector from './DifficultySelector';
 import GameTimer from './GameTimer';
 import StarRating from './StarRating';
+import { useProgress } from '@/hooks/useProgress';
 
 interface Point {
   x: number;
@@ -46,6 +47,8 @@ interface GameState {
 const TriangleGame: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rightAngleRef = useRef<HTMLDivElement>(null);
+  const { updateGameProgress } = useProgress();
+  
   const [gameState, setGameState] = useState<GameState>({
     round: 0,
     score: 0,
@@ -441,6 +444,13 @@ const TriangleGame: React.FC = () => {
   const endGame = () => {
     const stars = calculateStars();
     setGameState(prev => ({ ...prev, gameOver: true, timerActive: false, stars }));
+    
+    // Save progress to localStorage
+    updateGameProgress('altitude', {
+      score: gameState.score,
+      totalRounds: gameState.totalRounds,
+      stars: stars
+    });
     
     // Show falling stars animation
     setShowFallingStars(true);

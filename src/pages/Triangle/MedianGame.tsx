@@ -6,9 +6,11 @@ import GameLayout from '@/components/GameLayout';
 import GameTimer from '@/components/GameTimer';
 import StarRating from '@/components/StarRating';
 import { Point, Line, Triangle, GameState } from '@/lib/gameTypes';
+import { useProgress } from '@/hooks/useProgress';
 
 const MedianGame: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { updateGameProgress } = useProgress();
   const [gameState, setGameState] = useState<GameState>({
     round: 0,
     score: 0,
@@ -228,6 +230,13 @@ const MedianGame: React.FC = () => {
   const endGame = () => {
     const stars = Math.min(3, Math.max(0, Math.floor((gameState.score / gameState.totalRounds) * 3)));
     setGameState(prev => ({ ...prev, gameOver: true, timerActive: false, stars }));
+    
+    // Save progress to localStorage
+    updateGameProgress('median', {
+      score: gameState.score,
+      totalRounds: gameState.totalRounds,
+      stars: stars
+    });
     
     if (stars === 3) {
       setMessage(`🎉 מושלם! קיבלת ${gameState.score}/${gameState.totalRounds}! אתה מומחה תיכונים! 🎉`);
