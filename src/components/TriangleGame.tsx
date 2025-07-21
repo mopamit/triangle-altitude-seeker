@@ -764,7 +764,7 @@ const TriangleGame: React.FC = () => {
                 <div className={`flex items-center gap-3 font-bold ${combo >= 5 ? 'text-purple-200 animate-combo-fire' : 'text-yellow-600 animate-enhanced-pulse'}`}>
                   <div className="text-2xl">{combo >= 5 ? '⚡' : '🔥'}</div>
                   <div className="flex flex-col">
-                    <span className="text-lg">{combo >= 5 ? '👑 מלך' : 'רצף'}</span>
+                    <span className="text-lg">{combo >= 5 ? 'LEGENDARY' : 'COMBO'}</span>
                     <span className="text-2xl">x{combo}</span>
                   </div>
                 </div>
