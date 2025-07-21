@@ -193,6 +193,20 @@
     box-shadow: var(--shadow-perfect);
   }
 
+  .game-button-warning {
+    @apply bg-warning hover:bg-warning-glow text-warning-foreground;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .game-button-error {
+    @apply bg-error hover:bg-error-glow text-error-foreground;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .difficulty-card {
+    @apply transition-all duration-300 hover:scale-105 hover:shadow-lg;
+  }
+
   .success-message {
     @apply text-success font-bold animate-bounce;
   }
@@ -391,4 +405,43 @@
   50% { color: hsl(var(--primary)); }
   75% { color: hsl(var(--warning)); }
   100% { color: hsl(var(--perfect)); }
+}
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(-20px);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05) translateY(-10px);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(0.9) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animation classes */
+.animate-bounce-in {
+  animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-scale-in {
+  animation: scale-in 0.5s ease-out;
 }

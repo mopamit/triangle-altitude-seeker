@@ -1,7 +1,10 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trophy, Star, Target, Zap } from 'lucide-react';
+import { Trophy, Star, Target, Zap, Clock } from 'lucide-react';
+import DifficultySelector from './DifficultySelector';
+import GameTimer from './GameTimer';
+import StarRating from './StarRating';
 
 interface Point {
   x: number;
@@ -33,6 +36,11 @@ interface GameState {
   isProcessingClick: boolean;
   consecutiveCorrect: number;
   showRightAngle: boolean;
+  difficulty: 'easy' | 'medium' | 'hard';
+  timeLimit: number;
+  timeRemaining: number;
+  timerActive: boolean;
+  stars: number;
 }
 
 const TriangleGame: React.FC = () => {
@@ -49,11 +57,17 @@ const TriangleGame: React.FC = () => {
     isProcessingClick: false,
     consecutiveCorrect: 0,
     showRightAngle: false,
+    difficulty: 'easy',
+    timeLimit: 30,
+    timeRemaining: 30,
+    timerActive: false,
+    stars: 0,
   });
   
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'default' | 'success' | 'warning' | 'error' | 'perfect'>('default');
   const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; type: string }>>([]);
+  const [showDifficultySelector, setShowDifficultySelector] = useState(true);
 
   const Point = (x: number, y: number): Point => ({ x, y });
   const Line = (p1: Point, p2: Point, isAltitude = false): Line => ({ 
@@ -121,7 +135,11 @@ const TriangleGame: React.FC = () => {
   };
 
   const generateTriangle = (): Triangle => {
-    if (Math.random() < 0.33) {
+    // Adjust complexity based on difficulty
+    const complexityFactor = gameState.difficulty === 'hard' ? 0.5 : 
+                           gameState.difficulty === 'medium' ? 0.4 : 0.33;
+    
+    if (Math.random() < complexityFactor) {
       return generateRightAngledTriangle();
     } else {
       return generateObtuseOrAcuteTriangle();
@@ -341,16 +359,38 @@ const TriangleGame: React.FC = () => {
     }, 2000);
   };
 
-  const startGame = () => {
+  const startGameWithDifficulty = (difficulty: 'easy' | 'medium' | 'hard') => {
+    const timeLimit = difficulty === 'hard' ? 20 : difficulty === 'medium' ? 30 : 45;
+    const totalRounds = difficulty === 'hard' ? 20 : 15;
+    
     setGameState(prev => ({
       ...prev,
       round: 0,
       score: 0,
       gameOver: false,
-      consecutiveCorrect: 0
+      consecutiveCorrect: 0,
+      difficulty,
+      timeLimit,
+      timeRemaining: timeLimit,
+      timerActive: false,
+      totalRounds,
+      stars: 0
     }));
+    setShowDifficultySelector(false);
     setMessage('');
     nextRound();
+  };
+
+  const startGame = () => {
+    setShowDifficultySelector(true);
+  };
+
+  const calculateStars = () => {
+    const percentage = (gameState.score / gameState.totalRounds) * 100;
+    if (percentage >= 90) return 3;
+    if (percentage >= 70) return 2;
+    if (percentage >= 50) return 1;
+    return 0;
   };
 
   const nextRound = () => {
@@ -370,42 +410,67 @@ const TriangleGame: React.FC = () => {
       return {
         ...prev,
         round: newRound,
-        attempts: 2,
+        attempts: prev.difficulty === 'hard' ? 1 : 2,
         isProcessingClick: false,
         currentTriangle: triangle,
         lines: lines,
-        showRightAngle: false
+        showRightAngle: false,
+        timeRemaining: prev.timeLimit,
+        timerActive: true
       };
     });
   };
 
+  const onTimeUp = () => {
+    setGameState(prev => ({ ...prev, timerActive: false }));
+    setMessage('⏰ נגמר הזמן! נמשיך לסיבוב הבא.');
+    setMessageType('warning');
+    setTimeout(nextRound, 2000);
+  };
+
+  const onTimerTick = () => {
+    setGameState(prev => ({ ...prev, timeRemaining: prev.timeRemaining - 1 }));
+  };
+
   const endGame = () => {
-    setGameState(prev => ({ ...prev, gameOver: true }));
-    const perfectScore = gameState.score === gameState.totalRounds;
-    const goodScore = gameState.score >= gameState.totalRounds * 0.8;
+    const stars = calculateStars();
+    setGameState(prev => ({ ...prev, gameOver: true, timerActive: false, stars }));
     
-    if (perfectScore) {
-      setMessage(`🎉 מושלם! קיבלת ${gameState.score}/${gameState.totalRounds}! אתה אמן הגיאומטריה! 🎉`);
+    const difficultyText = gameState.difficulty === 'hard' ? 'קשה' : 
+                          gameState.difficulty === 'medium' ? 'בינוני' : 'קל';
+    
+    if (stars === 3) {
+      setMessage(`🎉 מושלם! קיבלת ${gameState.score}/${gameState.totalRounds} ברמה ${difficultyText}! אתה אמן הגיאומטריה! 🎉`);
       setMessageType('perfect');
-    } else if (goodScore) {
-      setMessage(`🌟 כל הכבוד! קיבלת ${gameState.score}/${gameState.totalRounds}! תוצאה מעולה! 🌟`);
+    } else if (stars === 2) {
+      setMessage(`🌟 כל הכבוד! קיבלת ${gameState.score}/${gameState.totalRounds} ברמה ${difficultyText}! תוצאה מעולה! 🌟`);
       setMessageType('success');
+    } else if (stars === 1) {
+      setMessage(`👍 לא רע! קיבלת ${gameState.score}/${gameState.totalRounds} ברמה ${difficultyText}. אפשר לשפר!`);
+      setMessageType('default');
     } else {
-      setMessage(`המשחק נגמר! הניקוד הסופי שלך הוא ${gameState.score}/${gameState.totalRounds}. נסה שוב!`);
+      setMessage(`המשחק נגמר! הניקוד שלך: ${gameState.score}/${gameState.totalRounds} ברמה ${difficultyText}. נסה שוב!`);
       setMessageType('default');
     }
   };
 
   const processGuess = (line: Line) => {
-    setGameState(prev => ({ ...prev, isProcessingClick: true }));
+    setGameState(prev => ({ ...prev, isProcessingClick: true, timerActive: false }));
 
     if (line.isAltitude) {
       const newConsecutive = gameState.consecutiveCorrect + 1;
       const isPerfectStreak = newConsecutive >= 3;
+      const isTimeBonus = gameState.timeRemaining > gameState.timeLimit * 0.8;
       
-      if (isPerfectStreak) {
+      if (isPerfectStreak && isTimeBonus) {
+        setMessage('🚀 מדהים! רצף מושלם עם בונוס זמן! 🚀');
+        setMessageType('perfect');
+      } else if (isPerfectStreak) {
         setMessage('🔥 רצף מושלם! אתה בלתי ניתן לעצירה! 🔥');
         setMessageType('perfect');
+      } else if (isTimeBonus) {
+        setMessage('⚡ מעולה! תשובה מהירה ונכונה! ⚡');
+        setMessageType('success');
       } else {
         setMessage('🎯 כל הכבוד! תשובה נכונה! 🎯');
         setMessageType('success');
@@ -542,17 +607,25 @@ const TriangleGame: React.FC = () => {
     return <Zap className="w-5 h-5 text-warning" />;
   };
 
+  if (showDifficultySelector) {
+    return (
+      <div className="w-full max-w-6xl mx-auto p-4 sm:p-6">
+        <DifficultySelector onSelectDifficulty={startGameWithDifficulty} />
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full max-w-5xl mx-auto p-4 sm:p-6 relative">
+    <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 relative">
       {/* Particles */}
       {particles.map(particle => (
         <div
           key={particle.id}
-          className={`fixed pointer-events-none w-3 h-3 rounded-full z-50 ${
-            particle.type === 'perfect' ? 'perfect-particles bg-perfect' : 'success-particles bg-success'
-          }`}
+          className={`fixed pointer-events-none text-2xl z-50 animate-bounce`}
           style={{ left: particle.x, top: particle.y }}
-        />
+        >
+          {particle.type === 'perfect' ? '🌟' : '🎯'}
+        </div>
       ))}
 
       <Card className="shadow-game hover:shadow-glow transition-all duration-500 animate-fade-in">
@@ -561,12 +634,12 @@ const TriangleGame: React.FC = () => {
             🔺 משחק הגובה במשולש 🔺
           </CardTitle>
           <p className="text-white/90 text-lg font-medium">
-            מצא את הקו שהוא הגובה במשולש • יש לך שתי הזדמנויות בכל סיבוב
+            מצא את הקו שהוא הגובה במשולש • רמה: {gameState.difficulty === 'hard' ? 'קשה' : gameState.difficulty === 'medium' ? 'בינוני' : 'קל'}
           </p>
         </CardHeader>
         
         <CardContent className="space-y-8 p-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="score-card text-center transform hover:scale-105 transition-transform">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Target className="w-5 h-5 text-primary" />
@@ -596,13 +669,36 @@ const TriangleGame: React.FC = () => {
                 {gameState.consecutiveCorrect}
               </div>
             </div>
+
+            <div className="score-card text-center transform hover:scale-105 transition-transform">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Star className="w-5 h-5 text-warning" />
+                <span className="text-sm font-medium text-muted-foreground">כוכבים</span>
+              </div>
+              <div className="flex justify-center">
+                <StarRating stars={gameState.gameOver ? gameState.stars : calculateStars()} />
+              </div>
+            </div>
           </div>
+
+          {/* Timer */}
+          {!gameState.gameOver && (
+            <div className="flex justify-center">
+              <GameTimer
+                timeRemaining={gameState.timeRemaining}
+                timeLimit={gameState.timeLimit}
+                isActive={gameState.timerActive}
+                onTimeUp={onTimeUp}
+                onTick={onTimerTick}
+              />
+            </div>
+          )}
 
           <div className="relative">
             <canvas
               ref={canvasRef}
-              width={600}
-              height={400}
+              width={1058}
+              height={500}
               className="game-canvas w-full transition-all duration-300"
               onClick={handleCanvasClick}
             />
@@ -622,30 +718,39 @@ const TriangleGame: React.FC = () => {
           </div>
 
           {gameState.gameOver && (
-            <div className="text-center animate-scale-in">
-              <Button 
-                onClick={startGame}
-                size="lg"
-                className={`${
-                  gameState.score === gameState.totalRounds 
-                    ? 'game-button-perfect animate-rainbow' 
-                    : gameState.score >= gameState.totalRounds * 0.8 
-                    ? 'game-button-success' 
-                    : 'game-button'
-                } transform hover:scale-105 transition-all duration-300`}
-              >
-                {gameState.round === 0 ? (
-                  <>
-                    <Target className="w-5 h-5 mr-2" />
-                    התחל משחק
-                  </>
-                ) : (
-                  <>
-                    <Zap className="w-5 h-5 mr-2" />
-                    שחק שוב
-                  </>
-                )}
-              </Button>
+            <div className="text-center space-y-6 animate-scale-in">
+              {gameState.stars > 0 && (
+                <div className="flex flex-col items-center gap-4">
+                  <h3 className="text-2xl font-bold">הישג מושג!</h3>
+                  <StarRating stars={gameState.stars} size="lg" animated={true} showCount={true} />
+                </div>
+              )}
+              
+              <div className="flex gap-4 justify-center">
+                <Button 
+                  onClick={startGame}
+                  size="lg"
+                  className="game-button transform hover:scale-105 transition-all duration-300"
+                >
+                  <Target className="w-5 h-5 mr-2" />
+                  שנה רמה
+                </Button>
+                
+                <Button 
+                  onClick={() => startGameWithDifficulty(gameState.difficulty)}
+                  size="lg"
+                  className={`${
+                    gameState.stars === 3
+                      ? 'game-button-perfect animate-rainbow' 
+                      : gameState.stars >= 2
+                      ? 'game-button-success' 
+                      : 'game-button'
+                  } transform hover:scale-105 transition-all duration-300`}
+                >
+                  <Zap className="w-5 h-5 mr-2" />
+                  שחק שוב
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>
