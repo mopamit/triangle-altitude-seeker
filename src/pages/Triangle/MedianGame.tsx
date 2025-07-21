@@ -361,6 +361,7 @@ const MedianGame: React.FC = () => {
     <GameLayout 
       title="📏 תיכון במשולש" 
       description="מצא את הקו המחבר קודקוד לאמצע הצלע המנוגדת"
+      showBackButton={true}
     >
       <div className="space-y-8">
         {/* Sparkling Star Particles */}
@@ -438,10 +439,8 @@ const MedianGame: React.FC = () => {
           />
         </div>
 
-        <div className="fixed inset-0 flex items-center justify-center z-40 pointer-events-none">
-          <div className={`text-4xl font-bold px-8 py-6 rounded-2xl shadow-2xl border-4 transition-all duration-500 ${getMessageClasses()}`}>
-            {message}
-          </div>
+        <div className={`min-h-[3rem] text-lg font-medium flex items-center justify-center text-center px-4 py-2 rounded-lg transition-all duration-300 ${getMessageClasses()} mb-4`}>
+          {message}
         </div>
 
         {gameState.gameOver && (
@@ -453,20 +452,32 @@ const MedianGame: React.FC = () => {
               </div>
             )}
             
-            <Button 
-              onClick={startGame}
-              size="lg"
-              className={`${
-                gameState.stars === 3
-                  ? 'game-button-perfect animate-rainbow' 
-                  : gameState.stars >= 2
-                  ? 'game-button-success' 
-                  : 'game-button'
-              } transform hover:scale-105 transition-all duration-300`}
-            >
-              <Zap className="w-5 h-5 mr-2" />
-              {gameState.round === 0 ? 'התחל משחק' : 'שחק שוב'}
-            </Button>
+            <div className="flex gap-4 justify-center">
+              <Button 
+                onClick={() => window.location.href = '/'}
+                size="lg"
+                variant="outline"
+                className="transform hover:scale-105 transition-all duration-300"
+              >
+                <Target className="w-5 h-5 mr-2" />
+                בית
+              </Button>
+              
+              <Button 
+                onClick={startGame}
+                size="lg"
+                className={`${
+                  gameState.stars === 3
+                    ? 'game-button-perfect animate-rainbow' 
+                    : gameState.stars >= 2
+                    ? 'game-button-success' 
+                    : 'game-button'
+                } transform hover:scale-105 transition-all duration-300`}
+              >
+                <Zap className="w-5 h-5 mr-2" />
+                {gameState.round === 0 ? 'התחל משחק' : 'שחק שוב'}
+              </Button>
+            </div>
           </div>
         )}
       </div>

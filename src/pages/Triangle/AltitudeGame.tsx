@@ -7,6 +7,7 @@ const AltitudeGame: React.FC = () => {
     <GameLayout 
       title="📐 גובה במשולש" 
       description="מצא את הקו הניצב מהקודקוד לצלע המנוגדת"
+      showBackButton={true}
     >
       <TriangleGame />
     </GameLayout>
