@@ -347,10 +347,10 @@ const TriangleGame: React.FC = () => {
   }, [draw]);
 
   const createParticles = (x: number, y: number, type: 'success' | 'perfect') => {
-    const newParticles = Array.from({ length: type === 'perfect' ? 15 : 8 }, (_, i) => ({
+    const newParticles = Array.from({ length: type === 'perfect' ? 8 : 5 }, (_, i) => ({
       id: Date.now() + i,
       x: Math.random() * window.innerWidth, // Spread across full width
-      y: Math.random() * window.innerHeight * 0.3, // Top third of screen
+      y: Math.random() * window.innerHeight, // Spread across full height
       type
     }));
     
@@ -359,7 +359,7 @@ const TriangleGame: React.FC = () => {
     // Remove particles after animation
     setTimeout(() => {
       setParticles(prev => prev.filter(p => !newParticles.find(np => np.id === p.id)));
-    }, 3000);
+    }, 2000);
   };
 
   const startGameWithDifficulty = (difficulty: 'easy' | 'medium' | 'hard') => {
@@ -628,11 +628,11 @@ const TriangleGame: React.FC = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 relative">
-      {/* Star Confetti Particles */}
+      {/* Sparkling Star Particles */}
       {particles.map(particle => (
         <div
           key={particle.id}
-          className="fixed pointer-events-none text-4xl z-50 animate-confetti-fall"
+          className="fixed pointer-events-none text-4xl z-50 animate-confetti-sparkle"
           style={{ left: particle.x, top: particle.y }}
         >
           ⭐
