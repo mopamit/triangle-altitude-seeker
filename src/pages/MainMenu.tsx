@@ -127,7 +127,7 @@ const MainMenu: React.FC = () => {
     return (
       <GameLayout 
         title="📊 התקדמות והישגים" 
-        description="עקוב אחר הביצועים שלך ונעל הישגים חדשים"
+        description="עקוב אחר הביצועים שלך והפוך למאסטר הגיאומטריה!"
         showBackButton={false}
       >
         <div className="space-y-6">
