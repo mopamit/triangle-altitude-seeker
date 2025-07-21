@@ -70,6 +70,8 @@ const TriangleGame: React.FC = () => {
   const [showDifficultySelector, setShowDifficultySelector] = useState(true);
   const [showFallingStars, setShowFallingStars] = useState(false);
   const [fallingStars, setFallingStars] = useState<Array<{ id: number; x: number; delay: number }>>([]);
+  const [combo, setCombo] = useState(0);
+  const [showCombo, setShowCombo] = useState(false);
 
   const Point = (x: number, y: number): Point => ({ x, y });
   const Line = (p1: Point, p2: Point, isAltitude = false): Line => ({ 
@@ -480,13 +482,28 @@ const TriangleGame: React.FC = () => {
       const newConsecutive = gameState.consecutiveCorrect + 1;
       const isPerfectStreak = newConsecutive >= 3;
       const isTimeBonus = gameState.timeRemaining > gameState.timeLimit * 0.8;
+      const newCombo = combo + 1;
       
-      if (isPerfectStreak && isTimeBonus) {
-        setMessage('🚀 מדהים! רצף מושלם עם בונוס זמן! 🚀');
+      // Update combo
+      setCombo(newCombo);
+      if (newCombo >= 3) {
+        setShowCombo(true);
+        setTimeout(() => setShowCombo(false), 2000);
+      }
+      
+      // Enhanced messaging with combo system
+      if (newCombo >= 5) {
+        setMessage('🌟 קומבו אגדי! x5 אתה מאסטר! 🌟');
+        setMessageType('perfect');
+      } else if (isPerfectStreak && isTimeBonus) {
+        setMessage(`🚀 מדהים! רצף מושלם עם בונוס זמן! Combo x${newCombo} 🚀`);
         setMessageType('perfect');
       } else if (isPerfectStreak) {
-        setMessage('🔥 רצף מושלם! אתה בלתי ניתן לעצירה! 🔥');
+        setMessage(`🔥 רצף מושלם! Combo x${newCombo} אתה בלתי ניתן לעצירה! 🔥`);
         setMessageType('perfect');
+      } else if (newCombo >= 3) {
+        setMessage(`⚡ Combo x${newCombo}! תשובה מהירה ונכונה! ⚡`);
+        setMessageType('success');
       } else if (isTimeBonus) {
         setMessage('⚡ מעולה! תשובה מהירה ונכונה! ⚡');
         setMessageType('success');
@@ -504,12 +521,14 @@ const TriangleGame: React.FC = () => {
       }));
       
       // Create particles spread across the screen instead of canvas center
-      createParticles(0, 0, isPerfectStreak ? 'perfect' : 'success');
+      createParticles(0, 0, isPerfectStreak || newCombo >= 5 ? 'perfect' : 'success');
       
       setTimeout(nextRound, 2000);
     } else {
       const newAttempts = gameState.attempts - 1;
       setGameState(prev => ({ ...prev, consecutiveCorrect: 0 }));
+      setCombo(0); // Reset combo on wrong answer
+      setShowCombo(false);
       
       if (newAttempts > 0) {
         setMessage('❌ טעות... נסה שוב! יש לך עוד הזדמנות! ❌');
@@ -728,6 +747,19 @@ const TriangleGame: React.FC = () => {
               className="game-canvas w-full transition-all duration-300"
               onClick={handleCanvasClick}
             />
+            
+            {/* Combo Display */}
+            {showCombo && combo >= 3 && (
+              <div className={`absolute top-4 left-4 bg-gradient-to-r ${combo >= 5 ? 'from-purple-500/30 to-pink-500/30 border-purple-400' : 'from-yellow-400/20 to-orange-500/20 border-yellow-400'} border-2 rounded-xl px-4 py-3 shadow-lg animate-combo-appear`}>
+                <div className={`flex items-center gap-3 font-bold ${combo >= 5 ? 'text-purple-200 animate-combo-fire' : 'text-yellow-600 animate-enhanced-pulse'}`}>
+                  <div className="text-2xl">{combo >= 5 ? '⚡' : '🔥'}</div>
+                  <div className="flex flex-col">
+                    <span className="text-lg">{combo >= 5 ? 'LEGENDARY' : 'COMBO'}</span>
+                    <span className="text-2xl">x{combo}</span>
+                  </div>
+                </div>
+              </div>
+            )}
             
             {gameState.showRightAngle && (
               <div className="absolute top-4 right-4 bg-perfect/10 border border-perfect/30 rounded-lg px-3 py-2 animate-bounce-in">
