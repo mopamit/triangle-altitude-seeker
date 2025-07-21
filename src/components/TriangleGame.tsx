@@ -253,10 +253,11 @@ const TriangleGame: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Create gradient background
+    // Create futuristic gradient background
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, '#f8fafc');
-    gradient.addColorStop(1, '#e2e8f0');
+    gradient.addColorStop(0, 'hsl(220, 30%, 8%)');
+    gradient.addColorStop(0.5, 'hsl(220, 25%, 12%)');
+    gradient.addColorStop(1, 'hsl(220, 30%, 8%)');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
@@ -285,22 +286,22 @@ const TriangleGame: React.FC = () => {
     ctx.lineTo(C.x, C.y);
     ctx.closePath();
     
-    // Triangle fill with subtle gradient
+    // Triangle fill with futuristic gradient
     const triangleGradient = ctx.createLinearGradient(
       Math.min(A.x, B.x, C.x), Math.min(A.y, B.y, C.y),
       Math.max(A.x, B.x, C.x), Math.max(A.y, B.y, C.y)
     );
-    triangleGradient.addColorStop(0, 'rgba(59, 130, 246, 0.05)');
-    triangleGradient.addColorStop(1, 'rgba(59, 130, 246, 0.1)');
+    triangleGradient.addColorStop(0, 'rgba(0, 200, 255, 0.15)');
+    triangleGradient.addColorStop(1, 'rgba(140, 69, 255, 0.1)');
     ctx.fillStyle = triangleGradient;
     ctx.fill();
     
-    ctx.strokeStyle = '#1e293b';
-    ctx.lineWidth = 4;
+    ctx.strokeStyle = 'hsl(200, 100%, 80%)';
+    ctx.lineWidth = 3;
     ctx.stroke();
 
-    // Draw lines with enhanced colors and effects
-    const lineColors = ['#3b82f6', '#ef4444', '#10b981', '#8b5cf6'];
+    // Draw lines with enhanced neon colors and effects
+    const lineColors = ['hsl(200, 100%, 60%)', 'hsl(0, 100%, 65%)', 'hsl(140, 90%, 55%)', 'hsl(280, 100%, 70%)'];
     gameState.lines.forEach((line, index) => {
       if (line.clicked) {
         ctx.strokeStyle = '#94a3b8';
@@ -378,7 +379,8 @@ const TriangleGame: React.FC = () => {
     }));
     setShowDifficultySelector(false);
     setMessage('');
-    nextRound();
+    // Fix: Call nextRound to actually start the game
+    setTimeout(() => nextRound(), 100);
   };
 
   const startGame = () => {
