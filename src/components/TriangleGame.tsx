@@ -52,7 +52,7 @@ const TriangleGame: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>({
     round: 0,
     score: 0,
-    attempts: 2,
+    attempts: 0,
     totalRounds: 15,
     gameOver: true,
     currentTriangle: null,
@@ -90,7 +90,7 @@ const TriangleGame: React.FC = () => {
 
   const generateObtuseOrAcuteTriangle = (): Triangle => {
     const canvas = canvasRef.current!;
-    const padding = 120; // Increased padding
+    const padding = 150; // Increased padding to prevent cutoff
     const w = canvas.width;
     const h = canvas.height;
     let A: Point, B: Point, C: Point, area: number;
@@ -100,14 +100,14 @@ const TriangleGame: React.FC = () => {
       B = Point(padding + Math.random() * (w - 2 * padding), padding + Math.random() * (h - 2 * padding));
       C = Point(padding + Math.random() * (w - 2 * padding), padding + Math.random() * (h - 2 * padding));
       area = Math.abs(A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y)) / 2;
-    } while (area < 12000); // Reduced minimum area
+    } while (area < 8000); // Reduced minimum area for better fit
     
     return { A, B, C };
   };
 
   const generateRightAngledTriangle = (): Triangle => {
     const canvas = canvasRef.current!;
-    const padding = 120; // Increased padding
+    const padding = 150; // Increased padding to prevent cutoff
     const w = canvas.width;
     const h = canvas.height;
     let A: Point, B: Point, C: Point, area: number, isOutOfBounds: boolean;
@@ -127,15 +127,15 @@ const TriangleGame: React.FC = () => {
       }
       
       const norm_perp = { x: v_perp.x / len_perp, y: v_perp.y / len_perp };
-      const side_length_ac = 80 + Math.random() * 150;
+      const side_length_ac = 70 + Math.random() * 120; // Reduced size for better fit
       C = Point(A.x + side_length_ac * norm_perp.x, A.y + side_length_ac * norm_perp.y);
 
       isOutOfBounds = C.x < padding || C.x > w - padding || C.y < padding || C.y > h - padding;
       area = Math.abs(A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y)) / 2;
       attempts++;
-    } while ((area < 10000 || isOutOfBounds) && attempts < 50);
+    } while ((area < 6000 || isOutOfBounds) && attempts < 50); // Reduced minimum area
     
-    if (isOutOfBounds || area < 10000) {
+    if (isOutOfBounds || area < 6000) {
       return generateObtuseOrAcuteTriangle();
     }
     return { A, B, C };
@@ -178,27 +178,42 @@ const TriangleGame: React.FC = () => {
     const foot_alt = Point(p1.x + t_alt * dx, p1.y + t_alt * dy);
     const altitude = Line(fromVertex, foot_alt, true);
     
-    if (t_alt < 0) {
-      altitude.extension = { from: p1, to: foot_alt };
-    } else if (t_alt > 1) {
-      altitude.extension = { from: p2, to: foot_alt };
+    // Progressive difficulty: Easy level ensures altitude is inside triangle
+    if (gameState.difficulty === 'easy' && (t_alt < 0 || t_alt > 1)) {
+      // For easy mode, if altitude falls outside, adjust to be on the edge
+      const adjustedT = Math.max(0.1, Math.min(0.9, t_alt));
+      const adjustedFoot = Point(p1.x + adjustedT * dx, p1.y + adjustedT * dy);
+      altitude.p2 = adjustedFoot;
+    } else {
+      // Medium/Hard: Allow altitudes outside triangle
+      if (t_alt < 0) {
+        altitude.extension = { from: p1, to: foot_alt };
+      } else if (t_alt > 1) {
+        altitude.extension = { from: p2, to: foot_alt };
+      }
     }
 
     const lines = [altitude];
-    const t_values = [t_alt];
+    const t_values = [gameState.difficulty === 'easy' ? Math.max(0.1, Math.min(0.9, t_alt)) : t_alt];
 
-    // Calculate two distractor lines
-    const h = dist(fromVertex, foot_alt);
+    // Calculate distractor lines based on difficulty
+    const numDistractors = gameState.difficulty === 'hard' ? 3 : 2;
+    const h = dist(fromVertex, altitude.p2);
     const min_pixel_sep = Math.max(25, h / 5.0);
     const min_t_sep = sideLength > 0 ? min_pixel_sep / sideLength : 0.1;
 
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < numDistractors; i++) {
       let t_new: number;
       let isSeparated: boolean;
       let attempts = 0;
       
       do {
-        t_new = (Math.random() * 1.8) - 0.4;
+        // For easy mode, keep distractors within or near triangle
+        if (gameState.difficulty === 'easy') {
+          t_new = Math.random() * 1.2 - 0.1; // Mostly inside triangle
+        } else {
+          t_new = (Math.random() * 1.8) - 0.4; // Can be far outside
+        }
         isSeparated = t_values.every(t => Math.abs(t_new - t) > min_t_sep);
         attempts++;
       } while (!isSeparated && attempts < 50);
@@ -419,7 +434,7 @@ const TriangleGame: React.FC = () => {
       return {
         ...prev,
         round: newRound,
-        attempts: prev.difficulty === 'hard' ? 1 : 2,
+        attempts: prev.difficulty === 'hard' ? 1 : 2, // Set proper attempts per round
         isProcessingClick: false,
         currentTriangle: triangle,
         lines: lines,
@@ -753,7 +768,7 @@ const TriangleGame: React.FC = () => {
             <canvas
               ref={canvasRef}
               width={1058}
-              height={500}
+              height={600}
               className="game-canvas w-full transition-all duration-300"
               onClick={handleCanvasClick}
             />
