@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trophy, Star, Target, Zap, Clock } from 'lucide-react';
+import { Trophy, Star, Target, Zap, Clock, HelpCircle } from 'lucide-react';
 import GameLayout from '@/components/GameLayout';
 import GameTimer from '@/components/GameTimer';
 import StarRating from '@/components/StarRating';
@@ -32,6 +32,7 @@ const MedianGame: React.FC = () => {
   const [messageType, setMessageType] = useState<'default' | 'success' | 'warning' | 'error' | 'perfect'>('default');
   const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; type: string }>>([]);
   const [currentTriangle, setCurrentTriangle] = useState<Triangle | null>(null);
+  const [showHint, setShowHint] = useState(false);
 
   const Point = (x: number, y: number): Point => ({ x, y });
   const Line = (p1: Point, p2: Point, isCorrect = false): Line => ({ 
@@ -72,16 +73,76 @@ const MedianGame: React.FC = () => {
     );
     const correctMedian = Line(fromVertex, midpoint, true);
     
+    // Calculate the length of the opposite side
+    const sideLength = Math.sqrt(
+      Math.pow(oppositeSide[1].x - oppositeSide[0].x, 2) + 
+      Math.pow(oppositeSide[1].y - oppositeSide[0].y, 2)
+    );
+    
     const lines = [correctMedian];
     
-    // Generate distractor lines - random points on the same side
+    // Generate distractor lines with better spacing to avoid overlap
+    const minSeparation = Math.max(30, sideLength * 0.15); // Minimum pixel separation
+    const maxAttempts = 20;
+    
     for (let i = 0; i < 2; i++) {
-      const t = Math.random() * 0.8 + 0.1; // Avoid endpoints
-      const randomPoint = Point(
-        oppositeSide[0].x + t * (oppositeSide[1].x - oppositeSide[0].x),
-        oppositeSide[0].y + t * (oppositeSide[1].y - oppositeSide[0].y)
-      );
-      lines.push(Line(fromVertex, randomPoint, false));
+      let attempts = 0;
+      let validPoint = false;
+      let randomPoint: Point;
+      
+      while (!validPoint && attempts < maxAttempts) {
+        // Generate random t value, avoiding the center (0.5) area
+        let t: number;
+        if (Math.random() < 0.5) {
+          t = Math.random() * 0.35 + 0.05; // Left part: 0.05 to 0.4
+        } else {
+          t = Math.random() * 0.35 + 0.6;  // Right part: 0.6 to 0.95
+        }
+        
+        randomPoint = Point(
+          oppositeSide[0].x + t * (oppositeSide[1].x - oppositeSide[0].x),
+          oppositeSide[0].y + t * (oppositeSide[1].y - oppositeSide[0].y)
+        );
+        
+        // Check distance from midpoint and other distractors
+        const distanceFromMidpoint = Math.sqrt(
+          Math.pow(randomPoint.x - midpoint.x, 2) + 
+          Math.pow(randomPoint.y - midpoint.y, 2)
+        );
+        
+        if (distanceFromMidpoint >= minSeparation) {
+          // Check distance from other distractor lines
+          let tooClose = false;
+          for (let j = 1; j < lines.length; j++) {
+            const distanceFromOther = Math.sqrt(
+              Math.pow(randomPoint.x - lines[j].p2.x, 2) + 
+              Math.pow(randomPoint.y - lines[j].p2.y, 2)
+            );
+            if (distanceFromOther < minSeparation) {
+              tooClose = true;
+              break;
+            }
+          }
+          
+          if (!tooClose) {
+            validPoint = true;
+          }
+        }
+        
+        attempts++;
+      }
+      
+      if (validPoint) {
+        lines.push(Line(fromVertex, randomPoint!, false));
+      } else {
+        // Fallback: use fixed positions if we can't find good random ones
+        const fallbackT = i === 0 ? 0.25 : 0.75;
+        const fallbackPoint = Point(
+          oppositeSide[0].x + fallbackT * (oppositeSide[1].x - oppositeSide[0].x),
+          oppositeSide[0].y + fallbackT * (oppositeSide[1].y - oppositeSide[0].y)
+        );
+        lines.push(Line(fromVertex, fallbackPoint, false));
+      }
     }
     
     // Shuffle lines
@@ -132,6 +193,77 @@ const MedianGame: React.FC = () => {
     ctx.lineWidth = 3;
     ctx.stroke();
 
+    // Draw hint measurement lines if enabled
+    if (showHint && !gameState.gameOver) {
+      const correctLine = gameState.lines.find(l => l.isCorrect);
+      if (correctLine) {
+        // Find which side the median is connected to
+        const vertices = [A, B, C];
+        const sides = [[B, C], [C, A], [A, B]];
+        
+        let targetSide: Point[] | null = null;
+        for (let i = 0; i < vertices.length; i++) {
+          const vertex = vertices[i];
+          const dist = Math.sqrt(
+            Math.pow(vertex.x - correctLine.p1.x, 2) + 
+            Math.pow(vertex.y - correctLine.p1.y, 2)
+          );
+          if (dist < 5) { // If this vertex is the start of the median
+            targetSide = sides[i];
+            break;
+          }
+        }
+        
+        if (targetSide) {
+          const [p1, p2] = targetSide;
+          const midpoint = Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
+          
+          // Draw measurement marks
+          const sideVector = { x: p2.x - p1.x, y: p2.y - p1.y };
+          const sideLength = Math.sqrt(sideVector.x * sideVector.x + sideVector.y * sideVector.y);
+          const perpVector = { x: -sideVector.y / sideLength, y: sideVector.x / sideLength };
+          
+          const markSize = 15;
+          const markOffset = 20;
+          
+          // Quarter marks
+          for (let i = 1; i <= 3; i++) {
+            const t = i / 4;
+            const markPoint = Point(
+              p1.x + t * sideVector.x,
+              p1.y + t * sideVector.y
+            );
+            
+            const markStart = Point(
+              markPoint.x + perpVector.x * markOffset,
+              markPoint.y + perpVector.y * markOffset
+            );
+            const markEnd = Point(
+              markPoint.x + perpVector.x * (markOffset + markSize),
+              markPoint.y + perpVector.y * (markOffset + markSize)
+            );
+            
+            ctx.strokeStyle = i === 2 ? 'hsl(140, 90%, 45%)' : 'hsl(0, 0%, 50%)';
+            ctx.lineWidth = i === 2 ? 3 : 2;
+            ctx.setLineDash(i === 2 ? [] : [5, 3]);
+            
+            ctx.beginPath();
+            ctx.moveTo(markStart.x, markStart.y);
+            ctx.lineTo(markEnd.x, markEnd.y);
+            ctx.stroke();
+            
+            // Draw measurement line to side
+            ctx.beginPath();
+            ctx.moveTo(markPoint.x, markPoint.y);
+            ctx.lineTo(markStart.x, markStart.y);
+            ctx.stroke();
+          }
+          
+          ctx.setLineDash([]);
+        }
+      }
+    }
+
     // Draw median lines
     const lineColors = ['hsl(200, 100%, 60%)', 'hsl(0, 100%, 65%)', 'hsl(140, 90%, 55%)'];
     gameState.lines.forEach((line, index) => {
@@ -168,7 +300,7 @@ const MedianGame: React.FC = () => {
         ctx.stroke();
       }
     }
-  }, [gameState, currentTriangle]);
+  }, [gameState, currentTriangle, showHint]);
 
   useEffect(() => {
     draw();
@@ -199,6 +331,7 @@ const MedianGame: React.FC = () => {
       stars: 0
     }));
     setMessage('');
+    setShowHint(false);
     nextRound();
   };
 
@@ -366,6 +499,10 @@ const MedianGame: React.FC = () => {
     return <Target className="w-5 h-5 text-green-500" />;
   };
 
+  const toggleHint = () => {
+    setShowHint(!showHint);
+  };
+
   return (
     <GameLayout 
       title="📏 תיכון במשולש" 
@@ -439,6 +576,21 @@ const MedianGame: React.FC = () => {
         )}
 
         <div className="relative">
+          {/* Hint Button */}
+          {!gameState.gameOver && (
+            <div className="absolute top-4 right-4 z-10">
+              <Button
+                onClick={toggleHint}
+                variant={showHint ? "default" : "outline"}
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <HelpCircle className="w-4 h-4" />
+                {showHint ? 'הסתר רמז' : 'הצג רמז'}
+              </Button>
+            </div>
+          )}
+          
           <canvas
             ref={canvasRef}
             width={1058}
