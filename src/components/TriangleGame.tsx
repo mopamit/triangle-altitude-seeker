@@ -50,7 +50,7 @@ const TriangleGame: React.FC = () => {
   const { updateGameProgress } = useProgress();
   
   const [gameState, setGameState] = useState<GameState>({
-    round: 1,
+    round: 0,
     score: 0,
     attempts: 0,
     totalRounds: 15,
