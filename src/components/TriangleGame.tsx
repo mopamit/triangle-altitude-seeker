@@ -388,7 +388,7 @@ const TriangleGame: React.FC = () => {
     
     setGameState(prev => ({
       ...prev,
-      round: 1,
+      round: 0, // Start from 0, will become 1 when nextRound is called
       score: 0,
       gameOver: false,
       consecutiveCorrect: 0,
