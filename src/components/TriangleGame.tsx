@@ -388,7 +388,7 @@ const TriangleGame: React.FC = () => {
     
     setGameState(prev => ({
       ...prev,
-      round: 0, // Start from 0, will become 1 when nextRound is called
+      round: 1, // Start directly at round 1
       score: 0,
       gameOver: false,
       consecutiveCorrect: 0,
@@ -401,8 +401,25 @@ const TriangleGame: React.FC = () => {
     }));
     setShowDifficultySelector(false);
     setMessage('');
-    // Fix: Call nextRound to actually start the game
-    setTimeout(() => nextRound(), 100);
+    // Start the first round immediately
+    setTimeout(() => {
+      const triangle = generateTriangle();
+      const lines = calculateLines(triangle);
+      
+      setGameState(prev => ({
+        ...prev,
+        attempts: prev.difficulty === 'hard' ? 1 : 2,
+        isProcessingClick: false,
+        currentTriangle: triangle,
+        lines: lines,
+        showRightAngle: false,
+        timeRemaining: prev.timeLimit,
+        timerActive: true
+      }));
+      
+      setMessage('בחר את הקו שהוא הגובה במשולש');
+      setMessageType('default');
+    }, 100);
   };
 
   const startGame = () => {
