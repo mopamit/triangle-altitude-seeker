@@ -20,6 +20,7 @@ interface Line {
   extension?: { from: Point; to: Point };
   actualFoot?: Point;
   t_parameter?: number;
+  baseSide?: { p1: Point; p2: Point };
 }
 
 interface Triangle {
@@ -173,42 +174,38 @@ const TriangleGame: React.FC = () => {
     const dx = p2.x - p1.x;
     const dy = p2.y - p1.y;
     const lenSq = dx * dx + dy * dy;
+    
+    if (lenSq === 0) {
+      // Degenerate case - regenerate triangle
+      return [];
+    }
 
-    // Calculate the exact altitude foot
-    const t_alt = lenSq === 0 ? 0 : ((fromVertex.x - p1.x) * dx + (fromVertex.y - p1.y) * dy) / lenSq;
+    // Calculate the exact altitude foot using perpendicular projection
+    const t_alt = ((fromVertex.x - p1.x) * dx + (fromVertex.y - p1.y) * dy) / lenSq;
     const foot_alt = Point(p1.x + t_alt * dx, p1.y + t_alt * dy);
     
-    // Create the altitude line
+    // Create the altitude line - always from vertex to the perpendicular foot
     const altitude = Line(fromVertex, foot_alt, true);
-    
-    // Store the actual foot position for right angle calculation
     altitude.actualFoot = foot_alt;
     altitude.t_parameter = t_alt;
     
-    // For display: if altitude is outside triangle, show extension
+    // Store which side is the base for highlighting
+    altitude.baseSide = { p1, p2 };
+    
+    // Handle extensions for altitudes that fall outside the triangle edge
     if (t_alt < 0) {
       altitude.extension = { from: p1, to: foot_alt };
-      // For display purposes, show the line to the triangle edge
-      if (gameState.difficulty === 'easy') {
-        altitude.p2 = p1;
-      }
     } else if (t_alt > 1) {
       altitude.extension = { from: p2, to: foot_alt };
-      // For display purposes, show the line to the triangle edge  
-      if (gameState.difficulty === 'easy') {
-        altitude.p2 = p2;
-      }
     }
 
     const lines = [altitude];
     const t_values = [t_alt];
 
-    // Calculate distractor lines based on difficulty
+    // Generate smarter distractor lines to avoid confusion
     const numDistractors = gameState.difficulty === 'hard' ? 3 : 2;
-    const altitudeLength = dist(fromVertex, foot_alt);
-    const min_pixel_sep = Math.max(30, altitudeLength / 6.0);
     const sideLength = Math.sqrt(lenSq);
-    const min_t_sep = sideLength > 0 ? min_pixel_sep / sideLength : 0.15;
+    const min_separation = Math.max(40, sideLength * 0.2); // Minimum pixel separation
 
     for (let i = 0; i < numDistractors; i++) {
       let t_new: number;
@@ -216,15 +213,26 @@ const TriangleGame: React.FC = () => {
       let attempts = 0;
       
       do {
-        // Generate distractor positions
+        // Generate distractor positions with better distribution
         if (gameState.difficulty === 'easy') {
-          t_new = Math.random() * 1.4 - 0.2; // Closer to triangle
+          // Keep distractors closer to triangle for easier gameplay
+          t_new = Math.random() * 1.6 - 0.3;
+        } else if (gameState.difficulty === 'medium') {
+          // Medium spread
+          t_new = Math.random() * 2.2 - 0.6;
         } else {
-          t_new = (Math.random() * 2.0) - 0.5; // Can be further outside
+          // Hard: can be quite far from triangle
+          t_new = Math.random() * 3.0 - 1.0;
         }
-        isSeparated = t_values.every(t => Math.abs(t_new - t) > min_t_sep);
+        
+        // Check separation in pixel space, not parameter space
+        const foot_new = Point(p1.x + t_new * dx, p1.y + t_new * dy);
+        isSeparated = t_values.every(t => {
+          const existing_foot = Point(p1.x + t * dx, p1.y + t * dy);
+          return dist(foot_new, existing_foot) > min_separation;
+        });
         attempts++;
-      } while (!isSeparated && attempts < 50);
+      } while (!isSeparated && attempts < 100);
 
       if (isSeparated) {
         t_values.push(t_new);
@@ -235,15 +243,10 @@ const TriangleGame: React.FC = () => {
         // Add extensions for distractors outside triangle
         if (t_new < 0) {
           distractor.extension = { from: p1, to: foot_new };
-          if (gameState.difficulty === 'easy') {
-            distractor.p2 = p1;
-          }
         } else if (t_new > 1) {
           distractor.extension = { from: p2, to: foot_new };
-          if (gameState.difficulty === 'easy') {
-            distractor.p2 = p2;
-          }
         }
+        
         lines.push(distractor);
       }
     }
@@ -253,47 +256,28 @@ const TriangleGame: React.FC = () => {
   };
 
   const drawRightAngleIndicator = (ctx: CanvasRenderingContext2D, altitudeLine: Line, triangle: Triangle) => {
-    if (!gameState.showRightAngle || !altitudeLine.actualFoot) return;
+    if (!gameState.showRightAngle || !altitudeLine.actualFoot || !altitudeLine.baseSide) return;
 
     const foot = altitudeLine.actualFoot;
     const vertex = altitudeLine.p1;
-    
-    // Find the triangle side that the altitude is perpendicular to
-    const { A, B, C } = triangle;
-    const vertices = [A, B, C];
-    const sides = [[B, C], [C, A], [A, B]];
-    
-    // Find which vertex the altitude comes from
-    let sideIndex = -1;
-    for (let i = 0; i < vertices.length; i++) {
-      if (Math.abs(vertex.x - vertices[i].x) < 1 && Math.abs(vertex.y - vertices[i].y) < 1) {
-        sideIndex = i;
-        break;
-      }
-    }
-    
-    if (sideIndex === -1) return;
-    
-    const side = sides[sideIndex];
-    const p1 = side[0];
-    const p2 = side[1];
+    const { p1: baseP1, p2: baseP2 } = altitudeLine.baseSide;
     
     const size = 25;
     
-    // Vector from altitude vertex to foot
+    // Vector from altitude vertex to foot (altitude direction)
     const altVector = { x: foot.x - vertex.x, y: foot.y - vertex.y };
     const altLen = Math.sqrt(altVector.x * altVector.x + altVector.y * altVector.y);
     if (altLen === 0) return;
     const altUnit = { x: altVector.x / altLen, y: altVector.y / altLen };
     
-    // Vector along the base side
-    const sideVector = { x: p2.x - p1.x, y: p2.y - p1.y };
-    const sideLen = Math.sqrt(sideVector.x * sideVector.x + sideVector.y * sideVector.y);
-    if (sideLen === 0) return;
-    const sideUnit = { x: sideVector.x / sideLen, y: sideVector.y / sideLen };
+    // Vector along the base side (base direction)
+    const baseVector = { x: baseP2.x - baseP1.x, y: baseP2.y - baseP1.y };
+    const baseLen = Math.sqrt(baseVector.x * baseVector.x + baseVector.y * baseVector.y);
+    if (baseLen === 0) return;
+    const baseUnit = { x: baseVector.x / baseLen, y: baseVector.y / baseLen };
     
-    // Draw the right angle square
-    const corner1 = { x: foot.x + sideUnit.x * size, y: foot.y + sideUnit.y * size };
+    // Draw the right angle square at the foot
+    const corner1 = { x: foot.x + baseUnit.x * size, y: foot.y + baseUnit.y * size };
     const corner2 = { x: foot.x + altUnit.x * size, y: foot.y + altUnit.y * size };
     const corner3 = { x: corner1.x + altUnit.x * size, y: corner1.y + altUnit.y * size };
     
@@ -304,14 +288,22 @@ const TriangleGame: React.FC = () => {
     ctx.lineTo(corner2.x, corner2.y);
     ctx.closePath();
     
-    // Fill the right angle square
-    ctx.fillStyle = 'rgba(139, 92, 246, 0.25)';
+    // Fill the right angle square with improved visibility
+    ctx.fillStyle = 'rgba(139, 92, 246, 0.4)';
     ctx.fill();
     
-    // Outline the right angle square
+    // Outline the right angle square with stronger border
     ctx.strokeStyle = '#8b5cf6';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     ctx.stroke();
+    
+    // Add "90°" text near the right angle
+    ctx.font = 'bold 16px Arial';
+    ctx.fillStyle = '#8b5cf6';
+    ctx.textAlign = 'center';
+    const textX = foot.x + (baseUnit.x + altUnit.x) * size * 0.7;
+    const textY = foot.y + (baseUnit.y + altUnit.y) * size * 0.7;
+    ctx.fillText('90°', textX, textY);
   };
 
   const draw = useCallback(() => {
@@ -347,6 +339,9 @@ const TriangleGame: React.FC = () => {
     });
     ctx.setLineDash([]);
 
+    // Find the altitude line to highlight its base
+    const altitudeLine = gameState.lines.find(l => l.isAltitude);
+    
     // Draw triangle with enhanced styling
     ctx.beginPath();
     ctx.moveTo(A.x, A.y);
@@ -364,9 +359,50 @@ const TriangleGame: React.FC = () => {
     ctx.fillStyle = triangleGradient;
     ctx.fill();
     
+    // Draw triangle outline
     ctx.strokeStyle = 'hsl(220, 60%, 30%)';
     ctx.lineWidth = 3;
     ctx.stroke();
+    
+    // Highlight the base side for the altitude
+    if (altitudeLine && altitudeLine.baseSide) {
+      const { p1: baseP1, p2: baseP2 } = altitudeLine.baseSide;
+      ctx.beginPath();
+      ctx.moveTo(baseP1.x, baseP1.y);
+      ctx.lineTo(baseP2.x, baseP2.y);
+      ctx.strokeStyle = '#f59e0b'; // Amber highlight
+      ctx.lineWidth = 5;
+      ctx.shadowColor = '#f59e0b';
+      ctx.shadowBlur = 10;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      
+      // Add small arrows pointing to the base
+      const midX = (baseP1.x + baseP2.x) / 2;
+      const midY = (baseP1.y + baseP2.y) / 2;
+      const dx = baseP2.x - baseP1.x;
+      const dy = baseP2.y - baseP1.y;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      if (len > 0) {
+        const unitX = dx / len;
+        const unitY = dy / len;
+        const perpX = -unitY;
+        const perpY = unitX;
+        
+        // Draw arrow pointing to base from above
+        const arrowSize = 15;
+        const arrowBase = { x: midX + perpX * 30, y: midY + perpY * 30 };
+        ctx.beginPath();
+        ctx.moveTo(arrowBase.x, arrowBase.y);
+        ctx.lineTo(midX, midY);
+        ctx.lineTo(arrowBase.x + unitX * arrowSize, arrowBase.y + unitY * arrowSize);
+        ctx.moveTo(midX, midY);
+        ctx.lineTo(arrowBase.x - unitX * arrowSize, arrowBase.y - unitY * arrowSize);
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
+    }
 
     // Draw lines with enhanced neon colors and effects
     const lineColors = ['hsl(200, 100%, 60%)', 'hsl(0, 100%, 65%)', 'hsl(140, 90%, 55%)', 'hsl(280, 100%, 70%)'];
