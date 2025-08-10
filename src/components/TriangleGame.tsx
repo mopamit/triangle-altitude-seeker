@@ -96,6 +96,11 @@ const TriangleGame: React.FC = () => {
     const padding = 250; // Increased padding to prevent any element from going outside canvas
     const w = canvas.width;
     const h = canvas.height;
+    
+    // Adjust minimum area based on difficulty - larger triangles for easier gameplay
+    const minArea = gameState.difficulty === 'easy' ? 12000 : 
+                   gameState.difficulty === 'medium' ? 9000 : 8000;
+    
     let A: Point, B: Point, C: Point, area: number;
     
     do {
@@ -128,7 +133,8 @@ const TriangleGame: React.FC = () => {
           area = 0; // Force regeneration
         }
       }
-    } while (area < 8000); // Reduced minimum area for better fit
+      
+    } while (area < minArea);
     
     return { A, B, C };
   };
@@ -138,6 +144,11 @@ const TriangleGame: React.FC = () => {
     const padding = 250; // Increased padding to prevent any element from going outside canvas
     const w = canvas.width;
     const h = canvas.height;
+    
+    // Adjust minimum area based on difficulty
+    const minArea = gameState.difficulty === 'easy' ? 9000 : 
+                   gameState.difficulty === 'medium' ? 7000 : 6000;
+    
     let A: Point, B: Point, C: Point, area: number, isOutOfBounds: boolean;
     let attempts = 0;
     
@@ -155,15 +166,18 @@ const TriangleGame: React.FC = () => {
       }
       
       const norm_perp = { x: v_perp.x / len_perp, y: v_perp.y / len_perp };
-      const side_length_ac = 70 + Math.random() * 120; // Reduced size for better fit
+      const side_length_ac = gameState.difficulty === 'easy' ? 100 + Math.random() * 140 : // Larger for easy mode
+                         gameState.difficulty === 'medium' ? 80 + Math.random() * 120 :
+                         70 + Math.random() * 100; // Smaller for hard mode
       C = Point(A.x + side_length_ac * norm_perp.x, A.y + side_length_ac * norm_perp.y);
 
       isOutOfBounds = C.x < padding || C.x > w - padding || C.y < padding || C.y > h - padding;
       area = Math.abs(A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y)) / 2;
       attempts++;
-    } while ((area < 6000 || isOutOfBounds) && attempts < 50); // Reduced minimum area
+      
+    } while ((area < minArea || isOutOfBounds) && attempts < 50);
     
-    if (isOutOfBounds || area < 6000) {
+    if (isOutOfBounds || area < minArea) {
       return generateObtuseOrAcuteTriangle();
     }
     return { A, B, C };
