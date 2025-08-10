@@ -103,6 +103,31 @@ const TriangleGame: React.FC = () => {
       B = Point(padding + Math.random() * (w - 2 * padding), padding + Math.random() * (h - 2 * padding));
       C = Point(padding + Math.random() * (w - 2 * padding), padding + Math.random() * (h - 2 * padding));
       area = Math.abs(A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y)) / 2;
+      
+      // For easy difficulty, ensure all altitudes fall inside triangle sides
+      if (gameState.difficulty === 'easy') {
+        const vertices = [A, B, C];
+        const sides = [[B, C], [C, A], [A, B]];
+        let allAltitudesInside = true;
+        
+        for (let i = 0; i < 3; i++) {
+          const vertex = vertices[i];
+          const [p1, p2] = sides[i];
+          const dx = p2.x - p1.x;
+          const dy = p2.y - p1.y;
+          const lenSq = dx * dx + dy * dy;
+          const t = lenSq === 0 ? 0 : ((vertex.x - p1.x) * dx + (vertex.y - p1.y) * dy) / lenSq;
+          
+          if (t < 0.1 || t > 0.9) {
+            allAltitudesInside = false;
+            break;
+          }
+        }
+        
+        if (!allAltitudesInside) {
+          area = 0; // Force regeneration
+        }
+      }
     } while (area < 8000); // Reduced minimum area for better fit
     
     return { A, B, C };
@@ -376,32 +401,6 @@ const TriangleGame: React.FC = () => {
       ctx.shadowBlur = 10;
       ctx.stroke();
       ctx.shadowBlur = 0;
-      
-      // Add small arrows pointing to the base
-      const midX = (baseP1.x + baseP2.x) / 2;
-      const midY = (baseP1.y + baseP2.y) / 2;
-      const dx = baseP2.x - baseP1.x;
-      const dy = baseP2.y - baseP1.y;
-      const len = Math.sqrt(dx * dx + dy * dy);
-      if (len > 0) {
-        const unitX = dx / len;
-        const unitY = dy / len;
-        const perpX = -unitY;
-        const perpY = unitX;
-        
-        // Draw arrow pointing to base from above
-        const arrowSize = 15;
-        const arrowBase = { x: midX + perpX * 30, y: midY + perpY * 30 };
-        ctx.beginPath();
-        ctx.moveTo(arrowBase.x, arrowBase.y);
-        ctx.lineTo(midX, midY);
-        ctx.lineTo(arrowBase.x + unitX * arrowSize, arrowBase.y + unitY * arrowSize);
-        ctx.moveTo(midX, midY);
-        ctx.lineTo(arrowBase.x - unitX * arrowSize, arrowBase.y - unitY * arrowSize);
-        ctx.strokeStyle = '#f59e0b';
-        ctx.lineWidth = 3;
-        ctx.stroke();
-      }
     }
 
     // Draw lines with enhanced neon colors and effects
@@ -858,6 +857,12 @@ const TriangleGame: React.FC = () => {
           )}
 
           <div className="relative">
+            <div className="text-center mb-6">
+              <p className="text-xl font-semibold text-primary bg-primary/10 rounded-lg px-4 py-3 border border-primary/20">
+                📐 סמן את הגובה במשולש הניצב לצלע המודגשת בכתום
+              </p>
+            </div>
+            
             <canvas
               ref={canvasRef}
               width={1058}
