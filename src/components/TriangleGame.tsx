@@ -93,7 +93,7 @@ const TriangleGame: React.FC = () => {
 
   const generateObtuseOrAcuteTriangle = (): Triangle => {
     const canvas = canvasRef.current!;
-    const padding = 150; // Increased padding to prevent cutoff
+    const padding = 250; // Increased padding to prevent any element from going outside canvas
     const w = canvas.width;
     const h = canvas.height;
     let A: Point, B: Point, C: Point, area: number;
@@ -135,7 +135,7 @@ const TriangleGame: React.FC = () => {
 
   const generateRightAngledTriangle = (): Triangle => {
     const canvas = canvasRef.current!;
-    const padding = 150; // Increased padding to prevent cutoff
+    const padding = 250; // Increased padding to prevent any element from going outside canvas
     const w = canvas.width;
     const h = canvas.height;
     let A: Point, B: Point, C: Point, area: number, isOutOfBounds: boolean;
@@ -239,15 +239,28 @@ const TriangleGame: React.FC = () => {
       
       do {
         // Generate distractor positions with better distribution
+        // Limit extension to stay within canvas bounds
+        const maxExtension = 0.8; // Reduced to keep within canvas
         if (gameState.difficulty === 'easy') {
           // Keep distractors closer to triangle for easier gameplay
-          t_new = Math.random() * 1.6 - 0.3;
+          t_new = Math.random() * 1.2 - 0.1;
         } else if (gameState.difficulty === 'medium') {
           // Medium spread
-          t_new = Math.random() * 2.2 - 0.6;
+          t_new = Math.random() * (1 + maxExtension) - maxExtension/2;
         } else {
-          // Hard: can be quite far from triangle
-          t_new = Math.random() * 3.0 - 1.0;
+          // Hard: still challenging but within bounds
+          t_new = Math.random() * (1 + maxExtension * 2) - maxExtension;
+        }
+        
+        // Check if the generated line point would be within canvas bounds
+        const foot_test = Point(p1.x + t_new * dx, p1.y + t_new * dy);
+        const canvas = canvasRef.current!;
+        const isWithinBounds = foot_test.x >= 50 && foot_test.x <= canvas.width - 50 && 
+                              foot_test.y >= 50 && foot_test.y <= canvas.height - 50;
+        
+        if (!isWithinBounds) {
+          // Regenerate within bounds
+          t_new = Math.max(0, Math.min(1, t_new)); // Clamp to triangle side
         }
         
         // Check separation in pixel space, not parameter space
