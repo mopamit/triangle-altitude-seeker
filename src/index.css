@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,104 +7,104 @@
 
 @layer base {
   :root {
-    /* Enhanced theme with lighter backgrounds */
-    --background: 210 15% 92%;
-    --foreground: 220 40% 15%;
+    /* Amit's color palette theme */
+    --background: 62 74% 85%; /* Light version of b0bd21 */
+    --foreground: 216 63% 22%; /* 14365e - dark blue for text */
 
     --card: 0 0% 100%;
-    --card-foreground: 220 40% 15%;
+    --card-foreground: 216 63% 22%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 40% 15%;
+    --popover-foreground: 216 63% 22%;
 
-    /* Futuristic primary colors - electric blue */
-    --primary: 200 100% 60%;
+    /* Primary colors - bright blue from palette */
+    --primary: 195 70% 51%; /* 2badde */
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 200 100% 65%;
-    --primary-light: 200 100% 90%;
-    --primary-glow: 200 100% 75%;
+    --primary-hover: 195 70% 45%;
+    --primary-light: 195 70% 90%;
+    --primary-glow: 195 70% 65%;
 
-    /* Success colors - neon green */
-    --success: 140 90% 55%;
+    /* Success colors - green from palette */
+    --success: 132 31% 60%; /* 6db580 */
     --success-foreground: 0 0% 100%;
-    --success-light: 140 90% 92%;
-    --success-glow: 140 90% 70%;
+    --success-light: 132 31% 92%;
+    --success-glow: 132 31% 70%;
 
-    /* Warning colors - electric orange */
-    --warning: 25 100% 60%;
-    --warning-foreground: 0 0% 100%;
-    --warning-light: 25 100% 92%;
-    --warning-glow: 25 100% 75%;
+    /* Warning colors - green-yellow from palette */
+    --warning: 62 74% 44%; /* b0bd21 */
+    --warning-foreground: 216 63% 22%;
+    --warning-light: 62 74% 85%;
+    --warning-glow: 62 74% 60%;
 
-    /* Error colors - neon red */
+    /* Error colors - keeping red for errors */
     --error: 0 100% 65%;
     --error-foreground: 0 0% 100%;
     --error-light: 0 100% 92%;
     --error-glow: 0 100% 75%;
 
-    /* Perfect answers - cyber purple */
-    --perfect: 280 100% 70%;
+    /* Perfect answers - teal from palette */
+    --perfect: 168 29% 42%; /* 4d8879 */
     --perfect-foreground: 0 0% 100%;
-    --perfect-light: 280 100% 95%;
-    --perfect-glow: 280 100% 85%;
+    --perfect-light: 168 29% 85%;
+    --perfect-glow: 168 29% 60%;
 
-    --secondary: 210 15% 88%;
-    --secondary-foreground: 220 40% 15%;
+    --secondary: 62 74% 85%; /* Light version of b0bd21 */
+    --secondary-foreground: 216 63% 22%;
 
-    --muted: 210 15% 90%;
-    --muted-foreground: 220 15% 45%;
+    --muted: 62 74% 90%;
+    --muted-foreground: 216 50% 45%;
 
-    --accent: 200 100% 20%;
-    --accent-foreground: 200 100% 90%;
+    --accent: 216 63% 22%; /* 14365e - dark blue */
+    --accent-foreground: 62 74% 85%;
 
     --destructive: 0 100% 65%;
     --destructive-foreground: 220 30% 8%;
 
-    --border: 220 20% 18%;
-    --input: 220 20% 15%;
-    --ring: 200 100% 60%;
+    --border: 195 70% 80%;
+    --input: 195 70% 85%;
+    --ring: 195 70% 51%;
 
-    /* Futuristic game colors */
-    --game-line-1: 200 100% 60%;  /* Electric Blue */
-    --game-line-2: 0 100% 65%;    /* Neon Red */
-    --game-line-3: 140 90% 55%;   /* Neon Green */
-    --game-line-4: 280 100% 70%;  /* Cyber Purple */
-    --game-altitude: 140 90% 55%; /* Neon Green for correct altitude */
-    --game-extension: 220 25% 40%; /* Lighter gray for extensions */
-    --game-triangle: 210 40% 85%; /* Light for triangle outline */
-    --game-right-angle: 280 100% 70%; /* Cyber Purple for right angle */
+    /* Game colors using Amit's palette */
+    --game-line-1: 195 70% 51%;  /* 2badde - bright blue */
+    --game-line-2: 0 100% 65%;    /* Keep red for contrast */
+    --game-line-3: 132 31% 60%;   /* 6db580 - green */
+    --game-line-4: 168 29% 42%;  /* 4d8879 - teal */
+    --game-altitude: 132 31% 60%; /* 6db580 - green for correct altitude */
+    --game-extension: 210 63% 50%; /* 21739e - medium blue for extensions */
+    --game-triangle: 216 63% 30%; /* 14365e - dark blue for triangle outline */
+    --game-right-angle: 168 29% 42%; /* 4d8879 - teal for right angle */
 
-    /* Enhanced futuristic gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(200 100% 60%), hsl(280 100% 70%));
-    --gradient-success: linear-gradient(135deg, hsl(140 90% 55%), hsl(120 90% 65%));
-    --gradient-warning: linear-gradient(135deg, hsl(25 100% 60%), hsl(35 100% 75%));
+    /* Gradients using Amit's palette */
+    --gradient-primary: linear-gradient(135deg, hsl(195 70% 51%), hsl(210 63% 36%));
+    --gradient-success: linear-gradient(135deg, hsl(132 31% 60%), hsl(132 31% 50%));
+    --gradient-warning: linear-gradient(135deg, hsl(62 74% 44%), hsl(62 74% 55%));
     --gradient-error: linear-gradient(135deg, hsl(0 100% 65%), hsl(10 100% 70%));
-    --gradient-perfect: linear-gradient(135deg, hsl(280 100% 70%), hsl(260 100% 80%));
-    --gradient-hero: linear-gradient(135deg, hsl(200 100% 60%), hsl(280 100% 70%), hsl(140 90% 55%));
-    --gradient-card: linear-gradient(135deg, hsl(0, 0%, 100%), hsl(210, 15%, 96%));
+    --gradient-perfect: linear-gradient(135deg, hsl(168 29% 42%), hsl(168 29% 52%));
+    --gradient-hero: linear-gradient(135deg, hsl(195 70% 51%), hsl(168 29% 42%), hsl(132 31% 60%));
+    --gradient-card: linear-gradient(135deg, hsl(0, 0%, 100%), hsl(62, 74%, 90%));
     
-    /* Animated cyber gradients */
+    /* Updated gradients using Amit's palette */
     --gradient-rainbow: linear-gradient(45deg, 
-      hsl(200 100% 60%), 
-      hsl(280 100% 70%), 
-      hsl(140 90% 55%), 
-      hsl(25 100% 60%), 
-      hsl(0 100% 65%)
+      hsl(195 70% 51%), 
+      hsl(168 29% 42%), 
+      hsl(132 31% 60%), 
+      hsl(62 74% 44%), 
+      hsl(216 63% 22%)
     );
 
     --gradient-cyber: linear-gradient(90deg,
-      hsl(200 100% 60%),
-      hsl(280 100% 70%),
-      hsl(200 100% 60%)
+      hsl(195 70% 51%),
+      hsl(168 29% 42%),
+      hsl(195 70% 51%)
     );
 
-    /* Enhanced futuristic shadows with neon glow */
-    --shadow-soft: 0 4px 15px hsl(200 100% 60% / 0.1);
-    --shadow-game: 0 15px 35px hsl(200 100% 60% / 0.2), 0 5px 15px hsl(280 100% 70% / 0.1);
-    --shadow-success: 0 15px 35px hsl(140 90% 55% / 0.3), 0 5px 15px hsl(140 90% 55% / 0.15);
-    --shadow-perfect: 0 20px 45px hsl(280 100% 70% / 0.4), 0 10px 25px hsl(280 100% 70% / 0.2);
-    --shadow-glow: 0 0 40px hsl(200 100% 60% / 0.4);
-    --shadow-neon: 0 0 20px hsl(200 100% 60% / 0.6), 0 0 40px hsl(200 100% 60% / 0.3);
+    /* Enhanced shadows using Amit's palette */
+    --shadow-soft: 0 4px 15px hsl(195 70% 51% / 0.1);
+    --shadow-game: 0 15px 35px hsl(195 70% 51% / 0.2), 0 5px 15px hsl(168 29% 42% / 0.1);
+    --shadow-success: 0 15px 35px hsl(132 31% 60% / 0.3), 0 5px 15px hsl(132 31% 60% / 0.15);
+    --shadow-perfect: 0 20px 45px hsl(168 29% 42% / 0.4), 0 10px 25px hsl(168 29% 42% / 0.2);
+    --shadow-glow: 0 0 40px hsl(195 70% 51% / 0.4);
+    --shadow-neon: 0 0 20px hsl(195 70% 51% / 0.6), 0 0 40px hsl(195 70% 51% / 0.3);
 
     --radius: 0.75rem;
 
@@ -117,10 +117,10 @@
     --sidebar-border: 210 15% 85%;
     --sidebar-ring: 200 100% 60%;
 
-    /* Header colors - cyan and white theme */
-    --header-bg: linear-gradient(135deg, hsl(180, 100%, 50%), hsl(200, 100%, 60%));
+    /* Header colors using Amit's palette */
+    --header-bg: linear-gradient(135deg, hsl(195, 70%, 51%), hsl(216, 63%, 22%));
     --header-text: 0 0% 100%;
-    --header-border: 180 100% 40%;
+    --header-border: 195 70% 40%;
   }
 
   .dark {
@@ -170,7 +170,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Heebo', sans-serif;
+    font-family: 'Assistant', sans-serif;
   }
 
   /* RTL support for Hebrew */
