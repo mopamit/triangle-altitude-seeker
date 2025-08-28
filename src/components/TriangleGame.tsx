@@ -98,16 +98,6 @@ const TriangleGame: React.FC = () => {
     const h = canvas.height;
     let A: Point, B: Point, C: Point, area: number;
     
-    // Minimum area based on difficulty for larger triangles
-    let minArea: number;
-    if (gameState.difficulty === 'easy') {
-      minArea = 12000; // Increased from 8000
-    } else if (gameState.difficulty === 'medium') {
-      minArea = 10000;
-    } else {
-      minArea = 8000;
-    }
-    
     do {
       A = Point(padding + Math.random() * (w - 2 * padding), padding + Math.random() * (h - 2 * padding));
       B = Point(padding + Math.random() * (w - 2 * padding), padding + Math.random() * (h - 2 * padding));
@@ -138,7 +128,7 @@ const TriangleGame: React.FC = () => {
           area = 0; // Force regeneration
         }
       }
-    } while (area < minArea); // Use variable minimum area based on difficulty
+    } while (area < 8000); // Reduced minimum area for better fit
     
     return { A, B, C };
   };
@@ -150,7 +140,6 @@ const TriangleGame: React.FC = () => {
     const h = canvas.height;
     let A: Point, B: Point, C: Point, area: number, isOutOfBounds: boolean;
     let attempts = 0;
-    const minRightTriangleArea = gameState.difficulty === 'easy' ? 8000 : 6000;
     
     do {
       A = Point(padding + Math.random() * (w - 2 * padding), padding + Math.random() * (h - 2 * padding));
@@ -166,16 +155,15 @@ const TriangleGame: React.FC = () => {
       }
       
       const norm_perp = { x: v_perp.x / len_perp, y: v_perp.y / len_perp };
-      // Increase side length for larger triangles
-      const side_length_ac = gameState.difficulty === 'easy' ? 90 + Math.random() * 140 : 70 + Math.random() * 120;
+      const side_length_ac = 70 + Math.random() * 120; // Reduced size for better fit
       C = Point(A.x + side_length_ac * norm_perp.x, A.y + side_length_ac * norm_perp.y);
 
       isOutOfBounds = C.x < padding || C.x > w - padding || C.y < padding || C.y > h - padding;
       area = Math.abs(A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y)) / 2;
       attempts++;
-    } while ((area < minRightTriangleArea || isOutOfBounds) && attempts < 50);
+    } while ((area < 6000 || isOutOfBounds) && attempts < 50); // Reduced minimum area
     
-    if (isOutOfBounds || area < minRightTriangleArea) {
+    if (isOutOfBounds || area < 6000) {
       return generateObtuseOrAcuteTriangle();
     }
     return { A, B, C };
@@ -363,15 +351,11 @@ const TriangleGame: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Create beautiful gradient background using user's specified colors
+    // Create light gradient background
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, 'hsl(62, 69%, 43%)');    // b0bd21 - lime green
-    gradient.addColorStop(0.16, 'hsl(210, 63%, 22%)'); // 14365e - dark blue  
-    gradient.addColorStop(0.33, 'hsl(191, 68%, 52%)'); // 2badde - cyan
-    gradient.addColorStop(0.5, 'hsl(207, 68%, 37%)');  // 21739e - blue
-    gradient.addColorStop(0.66, 'hsl(140, 33%, 57%)'); // 6db580 - sage green
-    gradient.addColorStop(0.83, 'hsl(166, 29%, 41%)'); // 4d8879 - dark teal
-    gradient.addColorStop(1, 'hsl(68, 30%, 35%)');     // 637840 - olive
+    gradient.addColorStop(0, 'hsl(210, 20%, 98%)');
+    gradient.addColorStop(0.5, 'hsl(210, 15%, 95%)');
+    gradient.addColorStop(1, 'hsl(210, 20%, 98%)');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     

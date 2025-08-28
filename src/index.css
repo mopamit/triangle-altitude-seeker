@@ -74,15 +74,6 @@
     --game-triangle: 210 40% 85%; /* Light for triangle outline */
     --game-right-angle: 280 100% 70%; /* Cyber Purple for right angle */
 
-    /* Game background colors from user's hex codes */
-    --game-bg-1: 62 69% 43%;   /* b0bd21 - lime green */
-    --game-bg-2: 210 63% 22%;  /* 14365e - dark blue */  
-    --game-bg-3: 191 68% 52%;  /* 2badde - cyan */
-    --game-bg-4: 207 68% 37%;  /* 21739e - blue */
-    --game-bg-5: 140 33% 57%;  /* 6db580 - sage green */
-    --game-bg-6: 166 29% 41%;  /* 4d8879 - dark teal */
-    --game-bg-7: 68 30% 35%;   /* 637840 - olive */
-
     /* Enhanced futuristic gradients */
     --gradient-primary: linear-gradient(135deg, hsl(200 100% 60%), hsl(280 100% 70%));
     --gradient-success: linear-gradient(135deg, hsl(140 90% 55%), hsl(120 90% 65%));
@@ -91,17 +82,6 @@
     --gradient-perfect: linear-gradient(135deg, hsl(280 100% 70%), hsl(260 100% 80%));
     --gradient-hero: linear-gradient(135deg, hsl(200 100% 60%), hsl(280 100% 70%), hsl(140 90% 55%));
     --gradient-card: linear-gradient(135deg, hsl(0, 0%, 100%), hsl(210, 15%, 96%));
-    
-    /* Game canvas background gradient using user colors */
-    --gradient-game-canvas: linear-gradient(45deg, 
-      hsl(var(--game-bg-1)), 
-      hsl(var(--game-bg-2)), 
-      hsl(var(--game-bg-3)), 
-      hsl(var(--game-bg-4)), 
-      hsl(var(--game-bg-5)), 
-      hsl(var(--game-bg-6)), 
-      hsl(var(--game-bg-7))
-    );
     
     /* Animated cyber gradients */
     --gradient-rainbow: linear-gradient(45deg, 
