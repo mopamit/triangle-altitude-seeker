@@ -382,7 +382,7 @@ const TriangleGame: React.FC = () => {
         ctx.beginPath();
         ctx.moveTo(line.extension.from.x, line.extension.from.y);
         ctx.lineTo(line.extension.to.x, line.extension.to.y);
-        ctx.strokeStyle = 'hsl(0, 0%, 85%)'; // Bright extension lines
+        ctx.strokeStyle = '#ffffff'; // White extension lines
         ctx.lineWidth = 3;
         ctx.setLineDash([8, 4]);
         ctx.stroke();
@@ -411,10 +411,10 @@ const TriangleGame: React.FC = () => {
     ctx.fill();
     
     // Draw bright triangle outline that's visible on dark backgrounds
-    ctx.strokeStyle = 'hsl(0, 0%, 95%)'; // Very light outline
-    ctx.lineWidth = 4;
-    ctx.shadowColor = 'hsl(0, 0%, 95%)';
-    ctx.shadowBlur = 5;
+    ctx.strokeStyle = '#ffffff'; // Pure white outline
+    ctx.lineWidth = 5;
+    ctx.shadowColor = '#ffffff';
+    ctx.shadowBlur = 8;
     ctx.stroke();
     ctx.shadowBlur = 0;
     
@@ -433,20 +433,20 @@ const TriangleGame: React.FC = () => {
     }
 
     // Draw lines with bright colors visible on dark backgrounds
-    const lineColors = ['hsl(200, 100%, 80%)', 'hsl(0, 100%, 75%)', 'hsl(140, 90%, 75%)', 'hsl(280, 100%, 85%)'];
+    const lineColors = ['#ffffff', '#ffff00', '#00ffff', '#ff00ff']; // Pure bright colors
     gameState.lines.forEach((line, index) => {
       if (line.clicked) {
-        ctx.strokeStyle = '#94a3b8';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#cccccc';
+        ctx.lineWidth = 3;
         ctx.setLineDash([8, 4]);
       } else {
         ctx.strokeStyle = lineColors[index % lineColors.length];
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 4;
         ctx.setLineDash([]);
         
-        // Add glow effect for unclicked lines
+        // Add strong glow effect for unclicked lines
         ctx.shadowColor = lineColors[index % lineColors.length];
-        ctx.shadowBlur = 8;
+        ctx.shadowBlur = 12;
       }
       
       ctx.beginPath();
