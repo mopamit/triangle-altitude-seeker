@@ -351,15 +351,15 @@ const TriangleGame: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Create beautiful gradient background using custom colors
+    // Create beautiful gradient background using custom colors - brightened
     const gradients = [
-      ['hsl(66, 70%, 44%)', 'hsl(138, 35%, 58%)'], // lime to green
-      ['hsl(209, 63%, 22%)', 'hsl(192, 70%, 52%)'], // dark blue to cyan
-      ['hsl(164, 28%, 42%)', 'hsl(207, 63%, 37%)'], // teal to blue
-      ['hsl(74, 30%, 36%)', 'hsl(66, 70%, 44%)'], // olive to lime
-      ['hsl(138, 35%, 58%)', 'hsl(164, 28%, 42%)'], // green to teal
-      ['hsl(192, 70%, 52%)', 'hsl(209, 63%, 22%)'], // cyan to dark blue
-      ['hsl(207, 63%, 37%)', 'hsl(74, 30%, 36%)'] // blue to olive
+      ['hsl(66, 70%, 70%)', 'hsl(138, 35%, 85%)'], // bright lime to very light green
+      ['hsl(209, 63%, 45%)', 'hsl(192, 70%, 75%)'], // lighter blue to bright cyan
+      ['hsl(164, 28%, 65%)', 'hsl(207, 63%, 60%)'], // bright teal to lighter blue
+      ['hsl(74, 30%, 60%)', 'hsl(66, 70%, 70%)'], // bright olive to bright lime
+      ['hsl(138, 35%, 85%)', 'hsl(164, 28%, 65%)'], // very light green to bright teal
+      ['hsl(192, 70%, 75%)', 'hsl(209, 63%, 45%)'], // bright cyan to lighter blue
+      ['hsl(207, 63%, 60%)', 'hsl(74, 30%, 60%)'] // lighter blue to bright olive
     ];
     
     const gradientIndex = (gameState.round - 1) % gradients.length;
@@ -821,10 +821,10 @@ const TriangleGame: React.FC = () => {
 
       <Card className="shadow-game hover:shadow-glow transition-all duration-500 animate-fade-in">
         <CardHeader className="text-center rounded-t-xl">
-          <CardTitle className="game-header text-3xl sm:text-4xl font-bold mb-3">
+          <CardTitle className="game-header text-3xl sm:text-4xl font-bold mb-3 text-white">
             🔺 משחק הגובה במשולש 🔺
           </CardTitle>
-          <p className="text-muted-foreground text-lg font-medium">
+          <p className="text-white text-lg font-medium">
             מצא את הקו שהוא הגובה במשולש • רמה: {gameState.difficulty === 'hard' ? 'קשה' : gameState.difficulty === 'medium' ? 'בינוני' : 'קל'}
           </p>
         </CardHeader>
@@ -834,7 +834,7 @@ const TriangleGame: React.FC = () => {
             <div className="score-card text-center transform hover:scale-105 transition-transform">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Target className="w-5 h-5 text-primary" />
-                <span className="text-sm font-medium text-muted-foreground">סיבוב</span>
+                <span className="text-sm font-medium text-white">סיבוב</span>
               </div>
               <div className="text-2xl font-bold text-primary">
                 {gameState.round}/{gameState.totalRounds}
@@ -844,7 +844,7 @@ const TriangleGame: React.FC = () => {
             <div className="score-card text-center transform hover:scale-105 transition-transform">
               <div className="flex items-center justify-center gap-2 mb-2">
                 {getScoreIcon()}
-                <span className="text-sm font-medium text-muted-foreground">ניקוד</span>
+                <span className="text-sm font-medium text-white">ניקוד</span>
               </div>
               <div className="text-2xl font-bold text-success">
                 {gameState.score}
@@ -854,7 +854,7 @@ const TriangleGame: React.FC = () => {
             <div className="score-card text-center transform hover:scale-105 transition-transform">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Zap className="w-5 h-5 text-warning" />
-                <span className="text-sm font-medium text-muted-foreground">רצף</span>
+                <span className="text-sm font-medium text-white">רצף</span>
               </div>
               <div className="text-2xl font-bold text-warning">
                 {gameState.consecutiveCorrect}
@@ -864,7 +864,7 @@ const TriangleGame: React.FC = () => {
             <div className="score-card text-center transform hover:scale-105 transition-transform">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Star className="w-5 h-5 text-warning" />
-                <span className="text-sm font-medium text-muted-foreground">כוכבים</span>
+                <span className="text-sm font-medium text-white">כוכבים</span>
               </div>
               <div className="flex justify-center">
                 <StarRating stars={gameState.gameOver ? gameState.stars : calculateStars()} />
@@ -887,7 +887,7 @@ const TriangleGame: React.FC = () => {
 
           <div className="relative">
             <div className="text-center mb-6">
-              <p className="text-xl font-semibold text-primary bg-primary/10 rounded-lg px-4 py-3 border border-primary/20">
+              <p className="text-xl font-semibold text-white bg-white/10 rounded-lg px-4 py-3 border border-white/20">
                 📐 סמן את הגובה במשולש הניצב לצלע המודגשת בכתום
               </p>
             </div>
