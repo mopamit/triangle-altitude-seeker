@@ -382,8 +382,8 @@ const TriangleGame: React.FC = () => {
         ctx.beginPath();
         ctx.moveTo(line.extension.from.x, line.extension.from.y);
         ctx.lineTo(line.extension.to.x, line.extension.to.y);
-        ctx.strokeStyle = '#64748b';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'hsl(0, 0%, 85%)'; // Bright extension lines
+        ctx.lineWidth = 3;
         ctx.setLineDash([8, 4]);
         ctx.stroke();
       }
@@ -400,20 +400,23 @@ const TriangleGame: React.FC = () => {
     ctx.lineTo(C.x, C.y);
     ctx.closePath();
     
-    // Triangle fill with futuristic gradient
+    // Triangle fill with bright visible gradient
     const triangleGradient = ctx.createLinearGradient(
       Math.min(A.x, B.x, C.x), Math.min(A.y, B.y, C.y),
       Math.max(A.x, B.x, C.x), Math.max(A.y, B.y, C.y)
     );
-    triangleGradient.addColorStop(0, 'rgba(0, 200, 255, 0.15)');
-    triangleGradient.addColorStop(1, 'rgba(140, 69, 255, 0.1)');
+    triangleGradient.addColorStop(0, 'rgba(255, 255, 255, 0.25)');
+    triangleGradient.addColorStop(1, 'rgba(255, 255, 255, 0.15)');
     ctx.fillStyle = triangleGradient;
     ctx.fill();
     
-    // Draw triangle outline
-    ctx.strokeStyle = 'hsl(220, 60%, 30%)';
-    ctx.lineWidth = 3;
+    // Draw bright triangle outline that's visible on dark backgrounds
+    ctx.strokeStyle = 'hsl(0, 0%, 95%)'; // Very light outline
+    ctx.lineWidth = 4;
+    ctx.shadowColor = 'hsl(0, 0%, 95%)';
+    ctx.shadowBlur = 5;
     ctx.stroke();
+    ctx.shadowBlur = 0;
     
     // Highlight the base side for the altitude
     if (altitudeLine && altitudeLine.baseSide) {
@@ -421,16 +424,16 @@ const TriangleGame: React.FC = () => {
       ctx.beginPath();
       ctx.moveTo(baseP1.x, baseP1.y);
       ctx.lineTo(baseP2.x, baseP2.y);
-      ctx.strokeStyle = '#f59e0b'; // Amber highlight
-      ctx.lineWidth = 5;
+      ctx.strokeStyle = 'hsl(45, 100%, 70%)'; // Bright yellow highlight
+      ctx.lineWidth = 6;
       ctx.shadowColor = '#f59e0b';
       ctx.shadowBlur = 10;
       ctx.stroke();
       ctx.shadowBlur = 0;
     }
 
-    // Draw lines with enhanced neon colors and effects
-    const lineColors = ['hsl(200, 100%, 60%)', 'hsl(0, 100%, 65%)', 'hsl(140, 90%, 55%)', 'hsl(280, 100%, 70%)'];
+    // Draw lines with bright colors visible on dark backgrounds
+    const lineColors = ['hsl(200, 100%, 80%)', 'hsl(0, 100%, 75%)', 'hsl(140, 90%, 75%)', 'hsl(280, 100%, 85%)'];
     gameState.lines.forEach((line, index) => {
       if (line.clicked) {
         ctx.strokeStyle = '#94a3b8';
