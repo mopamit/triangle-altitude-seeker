@@ -128,7 +128,7 @@ const TriangleGame: React.FC = () => {
           area = 0; // Force regeneration
         }
       }
-    } while (area < 8000); // Reduced minimum area for better fit
+    } while (area < 12000); // Increased minimum area for larger triangles
     
     return { A, B, C };
   };
@@ -161,9 +161,9 @@ const TriangleGame: React.FC = () => {
       isOutOfBounds = C.x < padding || C.x > w - padding || C.y < padding || C.y > h - padding;
       area = Math.abs(A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y)) / 2;
       attempts++;
-    } while ((area < 6000 || isOutOfBounds) && attempts < 50); // Reduced minimum area
+    } while ((area < 9000 || isOutOfBounds) && attempts < 50); // Increased minimum area for larger triangles
     
-    if (isOutOfBounds || area < 6000) {
+    if (isOutOfBounds || area < 9000) {
       return generateObtuseOrAcuteTriangle();
     }
     return { A, B, C };
@@ -351,11 +351,24 @@ const TriangleGame: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Create light gradient background
+    // Create beautiful gradient background using custom colors
+    const gradients = [
+      ['hsl(66, 70%, 44%)', 'hsl(138, 35%, 58%)'], // lime to green
+      ['hsl(209, 63%, 22%)', 'hsl(192, 70%, 52%)'], // dark blue to cyan
+      ['hsl(164, 28%, 42%)', 'hsl(207, 63%, 37%)'], // teal to blue
+      ['hsl(74, 30%, 36%)', 'hsl(66, 70%, 44%)'], // olive to lime
+      ['hsl(138, 35%, 58%)', 'hsl(164, 28%, 42%)'], // green to teal
+      ['hsl(192, 70%, 52%)', 'hsl(209, 63%, 22%)'], // cyan to dark blue
+      ['hsl(207, 63%, 37%)', 'hsl(74, 30%, 36%)'] // blue to olive
+    ];
+    
+    const gradientIndex = (gameState.round - 1) % gradients.length;
+    const [color1, color2] = gradients[gradientIndex];
+    
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, 'hsl(210, 20%, 98%)');
-    gradient.addColorStop(0.5, 'hsl(210, 15%, 95%)');
-    gradient.addColorStop(1, 'hsl(210, 20%, 98%)');
+    gradient.addColorStop(0, color1);
+    gradient.addColorStop(0.5, color2);
+    gradient.addColorStop(1, color1);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
