@@ -507,8 +507,21 @@ const TriangleGame: React.FC = () => {
     setMessage('');
     // Start the first round immediately
     setTimeout(() => {
+      // Make sure canvas is ready
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        console.error("Canvas not ready");
+        return;
+      }
+      
       const triangle = generateTriangle();
+      if (!triangle) {
+        console.error("Failed to generate triangle");
+        return;
+      }
+      
       const lines = calculateLines(triangle);
+      console.log("Generated triangle:", triangle, "Lines:", lines);
       
       setGameState(prev => ({
         ...prev,
@@ -523,7 +536,7 @@ const TriangleGame: React.FC = () => {
       
       setMessage('בחר את הקו שהוא הגובה במשולש');
       setMessageType('default');
-    }, 100);
+    }, 300); // Increased timeout to ensure canvas is ready
   };
 
   const startGame = () => {
