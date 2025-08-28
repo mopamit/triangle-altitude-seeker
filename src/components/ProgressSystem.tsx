@@ -14,7 +14,7 @@ const ProgressSystem: React.FC<ProgressSystemProps> = ({ progress }) => {
   const progressPercentage = totalGames > 0 ? (completedGames / totalGames) * 100 : 0;
 
   const getProgressLevel = () => {
-    if (progress.totalStars >= 15) return { title: 'מאסטר גיאומטריה', color: 'text-purple-600', icon: '👑' };
+    if (progress.totalStars >= 15) return { title: 'מאסטר גיאומטריה', color: 'text-blue-600', icon: '👑' };
     if (progress.totalStars >= 10) return { title: 'מומחה צורות', color: 'text-blue-600', icon: '🏆' };
     if (progress.totalStars >= 5) return { title: 'חוקר מתקדם', color: 'text-green-600', icon: '⭐' };
     return { title: 'מתחיל נלהב', color: 'text-orange-600', icon: '🚀' };
@@ -25,7 +25,7 @@ const ProgressSystem: React.FC<ProgressSystemProps> = ({ progress }) => {
   return (
     <div className="space-y-6">
       {/* Progress Overview */}
-      <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200">
+      <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200">
         <CardHeader className="text-center">
           <CardTitle className="flex items-center justify-center gap-3 text-2xl">
             <span className="text-3xl">{level.icon}</span>
@@ -57,8 +57,8 @@ const ProgressSystem: React.FC<ProgressSystemProps> = ({ progress }) => {
             </div>
 
             <div className="text-center p-4 bg-white rounded-xl shadow-sm border">
-              <Star className="w-8 h-8 mx-auto mb-2 text-purple-500" />
-              <div className="text-2xl font-bold text-purple-600">{Math.round(progress.averageScore)}%</div>
+              <Star className="w-8 h-8 mx-auto mb-2 text-blue-500" />
+              <div className="text-2xl font-bold text-blue-600">{Math.round(progress.averageScore)}%</div>
               <div className="text-sm text-muted-foreground">ממוצע</div>
             </div>
 

@@ -487,7 +487,7 @@ const MedianGame: React.FC = () => {
       case 'success': return `${baseClasses} bg-green-50 text-green-700 border-green-300`;
       case 'warning': return `${baseClasses} bg-yellow-50 text-yellow-700 border-yellow-300`;
       case 'error': return `${baseClasses} bg-red-50 text-red-700 border-red-300`;
-      case 'perfect': return `${baseClasses} bg-purple-50 text-purple-700 border-purple-300`;
+      case 'perfect': return `${baseClasses} bg-blue-50 text-blue-700 border-blue-300`;
       default: return `${baseClasses} bg-blue-50 text-blue-700 border-blue-300`;
     }
   };

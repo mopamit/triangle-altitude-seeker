@@ -417,7 +417,7 @@ const TriangleGame: React.FC = () => {
     }
 
     // Draw lines with enhanced neon colors and effects
-    const lineColors = ['hsl(200, 100%, 60%)', 'hsl(0, 100%, 65%)', 'hsl(140, 90%, 55%)', 'hsl(280, 100%, 70%)'];
+    const lineColors = ['hsl(195, 70%, 51%)', 'hsl(0, 100%, 65%)', 'hsl(132, 31%, 60%)', 'hsl(210, 63%, 36%)'];
     gameState.lines.forEach((line, index) => {
       if (line.clicked) {
         ctx.strokeStyle = '#94a3b8';
@@ -886,8 +886,8 @@ const TriangleGame: React.FC = () => {
             
             {/* Combo Display */}
             {showCombo && combo >= 3 && (
-              <div className={`absolute top-4 left-4 bg-gradient-to-r ${combo >= 5 ? 'from-purple-500/30 to-pink-500/30 border-purple-400' : 'from-yellow-400/20 to-orange-500/20 border-yellow-400'} border-2 rounded-xl px-4 py-3 shadow-lg animate-combo-appear`}>
-                <div className={`flex items-center gap-3 font-bold ${combo >= 5 ? 'text-purple-200 animate-combo-fire' : 'text-yellow-600 animate-enhanced-pulse'}`}>
+              <div className={`absolute top-4 left-4 bg-gradient-to-r ${combo >= 5 ? 'from-blue-500/30 to-blue-600/30 border-blue-400' : 'from-yellow-400/20 to-orange-500/20 border-yellow-400'} border-2 rounded-xl px-4 py-3 shadow-lg animate-combo-appear`}>
+                <div className={`flex items-center gap-3 font-bold ${combo >= 5 ? 'text-blue-200 animate-combo-fire' : 'text-yellow-600 animate-enhanced-pulse'}`}>
                   <div className="text-2xl">{combo >= 5 ? '⚡' : '🔥'}</div>
                   <div className="flex flex-col">
                     <span className="text-lg">{combo >= 5 ? 'LEGENDARY' : 'COMBO'}</span>

@@ -40,7 +40,7 @@ const GameLayout: React.FC<GameLayoutProps> = ({
         <Card className="shadow-2xl hover:shadow-3xl transition-all duration-500 animate-fade-in border-2 border-blue-100">
           <CardHeader className="text-center relative overflow-hidden">
             {/* Animated Background */}
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 opacity-90"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-blue-500 to-blue-600 opacity-90"></div>
             <div className="absolute inset-0 opacity-20">
               <div className="w-full h-full bg-repeat" style={{
                 backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
@@ -66,7 +66,7 @@ const GameLayout: React.FC<GameLayoutProps> = ({
       {/* Decorative Elements */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
         <div className="absolute top-20 left-10 w-32 h-32 bg-blue-200/20 rounded-full animate-float"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-purple-200/20 rounded-full animate-float-delayed"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-blue-200/20 rounded-full animate-float-delayed"></div>
         <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-cyan-200/20 rounded-full animate-float"></div>
         <div className="absolute bottom-40 right-1/3 w-28 h-28 bg-pink-200/20 rounded-full animate-float-delayed"></div>
       </div>

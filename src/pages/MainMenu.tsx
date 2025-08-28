@@ -84,7 +84,7 @@ const MainMenu: React.FC = () => {
   ];
 
   const categories = [
-    { id: 'all', name: 'הכל', icon: Sparkles, color: 'bg-purple-500' },
+    { id: 'all', name: 'הכל', icon: Sparkles, color: 'bg-blue-500' },
     { id: 'triangle', name: 'משולשים', icon: Triangle, color: 'bg-blue-500' },
     { id: 'quadrilateral', name: 'מרובעים', icon: Square, color: 'bg-green-500' },
     { id: 'circle', name: 'מעגלים', icon: Circle, color: 'bg-orange-500' },
@@ -172,7 +172,7 @@ const MainMenu: React.FC = () => {
             onClick={() => setShowProgress(true)}
             variant="outline"
             size="lg"
-            className="bg-gradient-to-r from-purple-50 to-blue-50 hover:from-purple-100 hover:to-blue-100"
+            className="bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200"
           >
             <Trophy className="w-5 h-5 mr-2" />
             התקדמות והישגים
@@ -250,7 +250,7 @@ const MainMenu: React.FC = () => {
                   size="lg"
                   className={`w-full transition-all duration-300 ${
                     game.unlocked 
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white' 
+                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white' 
                       : ''
                   }`}
                 >
