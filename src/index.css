@@ -7,15 +7,15 @@
 
 @layer base {
   :root {
-    /* Beautiful game theme with your custom colors */
-    --background: 209 63% 22%;
-    --foreground: 0 0% 95%;
+    /* Enhanced theme with lighter backgrounds */
+    --background: 210 15% 92%;
+    --foreground: 220 40% 15%;
 
-    --card: 192 70% 52%;
-    --card-foreground: 0 0% 95%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 40% 15%;
 
-    --popover: 164 28% 42%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 40% 15%;
 
     /* Futuristic primary colors - electric blue */
     --primary: 200 100% 60%;
@@ -74,38 +74,49 @@
     --game-triangle: 210 40% 85%; /* Light for triangle outline */
     --game-right-angle: 280 100% 70%; /* Cyber Purple for right angle */
 
-    /* Beautiful game gradients with your custom colors */
-    --gradient-primary: linear-gradient(135deg, hsl(192 70% 52%), hsl(207 63% 37%));
-    --gradient-success: linear-gradient(135deg, hsl(138 35% 58%), hsl(66 70% 44%));
-    --gradient-warning: linear-gradient(135deg, hsl(74 30% 36%), hsl(66 70% 44%));
+    /* Game background colors from user's hex codes */
+    --game-bg-1: 62 69% 43%;   /* b0bd21 - lime green */
+    --game-bg-2: 210 63% 22%;  /* 14365e - dark blue */  
+    --game-bg-3: 191 68% 52%;  /* 2badde - cyan */
+    --game-bg-4: 207 68% 37%;  /* 21739e - blue */
+    --game-bg-5: 140 33% 57%;  /* 6db580 - sage green */
+    --game-bg-6: 166 29% 41%;  /* 4d8879 - dark teal */
+    --game-bg-7: 68 30% 35%;   /* 637840 - olive */
+
+    /* Enhanced futuristic gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(200 100% 60%), hsl(280 100% 70%));
+    --gradient-success: linear-gradient(135deg, hsl(140 90% 55%), hsl(120 90% 65%));
+    --gradient-warning: linear-gradient(135deg, hsl(25 100% 60%), hsl(35 100% 75%));
     --gradient-error: linear-gradient(135deg, hsl(0 100% 65%), hsl(10 100% 70%));
-    --gradient-perfect: linear-gradient(135deg, hsl(164 28% 42%), hsl(138 35% 58%));
-    --gradient-hero: linear-gradient(135deg, hsl(192 70% 52%), hsl(209 63% 22%), hsl(138 35% 58%));
-    --gradient-card: linear-gradient(135deg, hsl(192 70% 52%), hsl(164 28% 42%));
+    --gradient-perfect: linear-gradient(135deg, hsl(280 100% 70%), hsl(260 100% 80%));
+    --gradient-hero: linear-gradient(135deg, hsl(200 100% 60%), hsl(280 100% 70%), hsl(140 90% 55%));
+    --gradient-card: linear-gradient(135deg, hsl(0, 0%, 100%), hsl(210, 15%, 96%));
     
-    /* Beautiful animated gradients */
+    /* Game canvas background gradient using user colors */
+    --gradient-game-canvas: linear-gradient(45deg, 
+      hsl(var(--game-bg-1)), 
+      hsl(var(--game-bg-2)), 
+      hsl(var(--game-bg-3)), 
+      hsl(var(--game-bg-4)), 
+      hsl(var(--game-bg-5)), 
+      hsl(var(--game-bg-6)), 
+      hsl(var(--game-bg-7))
+    );
+    
+    /* Animated cyber gradients */
     --gradient-rainbow: linear-gradient(45deg, 
-      hsl(66 70% 44%), 
-      hsl(192 70% 52%), 
-      hsl(138 35% 58%), 
-      hsl(164 28% 42%), 
-      hsl(207 63% 37%)
+      hsl(200 100% 60%), 
+      hsl(280 100% 70%), 
+      hsl(140 90% 55%), 
+      hsl(25 100% 60%), 
+      hsl(0 100% 65%)
     );
 
     --gradient-cyber: linear-gradient(90deg,
-      hsl(192 70% 52%),
-      hsl(209 63% 22%),
-      hsl(192 70% 52%)
+      hsl(200 100% 60%),
+      hsl(280 100% 70%),
+      hsl(200 100% 60%)
     );
-
-    /* Game canvas backgrounds */
-    --gradient-canvas-1: linear-gradient(135deg, hsl(66 70% 44%), hsl(138 35% 58%));
-    --gradient-canvas-2: linear-gradient(135deg, hsl(209 63% 22%), hsl(192 70% 52%));
-    --gradient-canvas-3: linear-gradient(135deg, hsl(164 28% 42%), hsl(207 63% 37%));
-    --gradient-canvas-4: linear-gradient(135deg, hsl(74 30% 36%), hsl(66 70% 44%));
-    --gradient-canvas-5: linear-gradient(135deg, hsl(138 35% 58%), hsl(164 28% 42%));
-    --gradient-canvas-6: linear-gradient(135deg, hsl(192 70% 52%), hsl(209 63% 22%));
-    --gradient-canvas-7: linear-gradient(135deg, hsl(207 63% 37%), hsl(74 30% 36%));
 
     /* Enhanced futuristic shadows with neon glow */
     --shadow-soft: 0 4px 15px hsl(200 100% 60% / 0.1);

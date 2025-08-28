@@ -98,6 +98,16 @@ const TriangleGame: React.FC = () => {
     const h = canvas.height;
     let A: Point, B: Point, C: Point, area: number;
     
+    // Minimum area based on difficulty for larger triangles
+    let minArea: number;
+    if (gameState.difficulty === 'easy') {
+      minArea = 12000; // Increased from 8000
+    } else if (gameState.difficulty === 'medium') {
+      minArea = 10000;
+    } else {
+      minArea = 8000;
+    }
+    
     do {
       A = Point(padding + Math.random() * (w - 2 * padding), padding + Math.random() * (h - 2 * padding));
       B = Point(padding + Math.random() * (w - 2 * padding), padding + Math.random() * (h - 2 * padding));
@@ -128,7 +138,7 @@ const TriangleGame: React.FC = () => {
           area = 0; // Force regeneration
         }
       }
-    } while (area < 12000); // Increased minimum area for larger triangles
+    } while (area < minArea); // Use variable minimum area based on difficulty
     
     return { A, B, C };
   };
@@ -140,6 +150,7 @@ const TriangleGame: React.FC = () => {
     const h = canvas.height;
     let A: Point, B: Point, C: Point, area: number, isOutOfBounds: boolean;
     let attempts = 0;
+    const minRightTriangleArea = gameState.difficulty === 'easy' ? 8000 : 6000;
     
     do {
       A = Point(padding + Math.random() * (w - 2 * padding), padding + Math.random() * (h - 2 * padding));
@@ -155,15 +166,16 @@ const TriangleGame: React.FC = () => {
       }
       
       const norm_perp = { x: v_perp.x / len_perp, y: v_perp.y / len_perp };
-      const side_length_ac = 70 + Math.random() * 120; // Reduced size for better fit
+      // Increase side length for larger triangles
+      const side_length_ac = gameState.difficulty === 'easy' ? 90 + Math.random() * 140 : 70 + Math.random() * 120;
       C = Point(A.x + side_length_ac * norm_perp.x, A.y + side_length_ac * norm_perp.y);
 
       isOutOfBounds = C.x < padding || C.x > w - padding || C.y < padding || C.y > h - padding;
       area = Math.abs(A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y)) / 2;
       attempts++;
-    } while ((area < 9000 || isOutOfBounds) && attempts < 50); // Increased minimum area for larger triangles
+    } while ((area < minRightTriangleArea || isOutOfBounds) && attempts < 50);
     
-    if (isOutOfBounds || area < 9000) {
+    if (isOutOfBounds || area < minRightTriangleArea) {
       return generateObtuseOrAcuteTriangle();
     }
     return { A, B, C };
@@ -351,24 +363,15 @@ const TriangleGame: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Create beautiful gradient background using custom colors - brightened
-    const gradients = [
-      ['hsl(66, 70%, 70%)', 'hsl(138, 35%, 85%)'], // bright lime to very light green
-      ['hsl(209, 63%, 45%)', 'hsl(192, 70%, 75%)'], // lighter blue to bright cyan
-      ['hsl(164, 28%, 65%)', 'hsl(207, 63%, 60%)'], // bright teal to lighter blue
-      ['hsl(74, 30%, 60%)', 'hsl(66, 70%, 70%)'], // bright olive to bright lime
-      ['hsl(138, 35%, 85%)', 'hsl(164, 28%, 65%)'], // very light green to bright teal
-      ['hsl(192, 70%, 75%)', 'hsl(209, 63%, 45%)'], // bright cyan to lighter blue
-      ['hsl(207, 63%, 60%)', 'hsl(74, 30%, 60%)'] // lighter blue to bright olive
-    ];
-    
-    const gradientIndex = (gameState.round - 1) % gradients.length;
-    const [color1, color2] = gradients[gradientIndex];
-    
+    // Create beautiful gradient background using user's specified colors
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, color1);
-    gradient.addColorStop(0.5, color2);
-    gradient.addColorStop(1, color1);
+    gradient.addColorStop(0, 'hsl(62, 69%, 43%)');    // b0bd21 - lime green
+    gradient.addColorStop(0.16, 'hsl(210, 63%, 22%)'); // 14365e - dark blue  
+    gradient.addColorStop(0.33, 'hsl(191, 68%, 52%)'); // 2badde - cyan
+    gradient.addColorStop(0.5, 'hsl(207, 68%, 37%)');  // 21739e - blue
+    gradient.addColorStop(0.66, 'hsl(140, 33%, 57%)'); // 6db580 - sage green
+    gradient.addColorStop(0.83, 'hsl(166, 29%, 41%)'); // 4d8879 - dark teal
+    gradient.addColorStop(1, 'hsl(68, 30%, 35%)');     // 637840 - olive
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
@@ -382,8 +385,8 @@ const TriangleGame: React.FC = () => {
         ctx.beginPath();
         ctx.moveTo(line.extension.from.x, line.extension.from.y);
         ctx.lineTo(line.extension.to.x, line.extension.to.y);
-        ctx.strokeStyle = '#ffffff'; // White extension lines
-        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 2;
         ctx.setLineDash([8, 4]);
         ctx.stroke();
       }
@@ -400,23 +403,20 @@ const TriangleGame: React.FC = () => {
     ctx.lineTo(C.x, C.y);
     ctx.closePath();
     
-    // Triangle fill with bright visible gradient
+    // Triangle fill with futuristic gradient
     const triangleGradient = ctx.createLinearGradient(
       Math.min(A.x, B.x, C.x), Math.min(A.y, B.y, C.y),
       Math.max(A.x, B.x, C.x), Math.max(A.y, B.y, C.y)
     );
-    triangleGradient.addColorStop(0, 'rgba(255, 255, 255, 0.25)');
-    triangleGradient.addColorStop(1, 'rgba(255, 255, 255, 0.15)');
+    triangleGradient.addColorStop(0, 'rgba(0, 200, 255, 0.15)');
+    triangleGradient.addColorStop(1, 'rgba(140, 69, 255, 0.1)');
     ctx.fillStyle = triangleGradient;
     ctx.fill();
     
-    // Draw bright triangle outline that's visible on dark backgrounds
-    ctx.strokeStyle = '#ffffff'; // Pure white outline
-    ctx.lineWidth = 5;
-    ctx.shadowColor = '#ffffff';
-    ctx.shadowBlur = 8;
+    // Draw triangle outline
+    ctx.strokeStyle = 'hsl(220, 60%, 30%)';
+    ctx.lineWidth = 3;
     ctx.stroke();
-    ctx.shadowBlur = 0;
     
     // Highlight the base side for the altitude
     if (altitudeLine && altitudeLine.baseSide) {
@@ -424,29 +424,29 @@ const TriangleGame: React.FC = () => {
       ctx.beginPath();
       ctx.moveTo(baseP1.x, baseP1.y);
       ctx.lineTo(baseP2.x, baseP2.y);
-      ctx.strokeStyle = 'hsl(45, 100%, 70%)'; // Bright yellow highlight
-      ctx.lineWidth = 6;
+      ctx.strokeStyle = '#f59e0b'; // Amber highlight
+      ctx.lineWidth = 5;
       ctx.shadowColor = '#f59e0b';
       ctx.shadowBlur = 10;
       ctx.stroke();
       ctx.shadowBlur = 0;
     }
 
-    // Draw lines with bright colors visible on dark backgrounds
-    const lineColors = ['#ffffff', '#ffff00', '#00ffff', '#ff00ff']; // Pure bright colors
+    // Draw lines with enhanced neon colors and effects
+    const lineColors = ['hsl(200, 100%, 60%)', 'hsl(0, 100%, 65%)', 'hsl(140, 90%, 55%)', 'hsl(280, 100%, 70%)'];
     gameState.lines.forEach((line, index) => {
       if (line.clicked) {
-        ctx.strokeStyle = '#cccccc';
-        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 2;
         ctx.setLineDash([8, 4]);
       } else {
         ctx.strokeStyle = lineColors[index % lineColors.length];
-        ctx.lineWidth = 4;
+        ctx.lineWidth = 3;
         ctx.setLineDash([]);
         
-        // Add strong glow effect for unclicked lines
+        // Add glow effect for unclicked lines
         ctx.shadowColor = lineColors[index % lineColors.length];
-        ctx.shadowBlur = 12;
+        ctx.shadowBlur = 8;
       }
       
       ctx.beginPath();
@@ -507,21 +507,8 @@ const TriangleGame: React.FC = () => {
     setMessage('');
     // Start the first round immediately
     setTimeout(() => {
-      // Make sure canvas is ready
-      const canvas = canvasRef.current;
-      if (!canvas) {
-        console.error("Canvas not ready");
-        return;
-      }
-      
       const triangle = generateTriangle();
-      if (!triangle) {
-        console.error("Failed to generate triangle");
-        return;
-      }
-      
       const lines = calculateLines(triangle);
-      console.log("Generated triangle:", triangle, "Lines:", lines);
       
       setGameState(prev => ({
         ...prev,
@@ -536,7 +523,7 @@ const TriangleGame: React.FC = () => {
       
       setMessage('בחר את הקו שהוא הגובה במשולש');
       setMessageType('default');
-    }, 300); // Increased timeout to ensure canvas is ready
+    }, 100);
   };
 
   const startGame = () => {
@@ -834,10 +821,10 @@ const TriangleGame: React.FC = () => {
 
       <Card className="shadow-game hover:shadow-glow transition-all duration-500 animate-fade-in">
         <CardHeader className="text-center rounded-t-xl">
-          <CardTitle className="game-header text-3xl sm:text-4xl font-bold mb-3 text-white">
+          <CardTitle className="game-header text-3xl sm:text-4xl font-bold mb-3">
             🔺 משחק הגובה במשולש 🔺
           </CardTitle>
-          <p className="text-white text-lg font-medium">
+          <p className="text-muted-foreground text-lg font-medium">
             מצא את הקו שהוא הגובה במשולש • רמה: {gameState.difficulty === 'hard' ? 'קשה' : gameState.difficulty === 'medium' ? 'בינוני' : 'קל'}
           </p>
         </CardHeader>
@@ -847,7 +834,7 @@ const TriangleGame: React.FC = () => {
             <div className="score-card text-center transform hover:scale-105 transition-transform">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Target className="w-5 h-5 text-primary" />
-                <span className="text-sm font-medium text-white">סיבוב</span>
+                <span className="text-sm font-medium text-muted-foreground">סיבוב</span>
               </div>
               <div className="text-2xl font-bold text-primary">
                 {gameState.round}/{gameState.totalRounds}
@@ -857,7 +844,7 @@ const TriangleGame: React.FC = () => {
             <div className="score-card text-center transform hover:scale-105 transition-transform">
               <div className="flex items-center justify-center gap-2 mb-2">
                 {getScoreIcon()}
-                <span className="text-sm font-medium text-white">ניקוד</span>
+                <span className="text-sm font-medium text-muted-foreground">ניקוד</span>
               </div>
               <div className="text-2xl font-bold text-success">
                 {gameState.score}
@@ -867,7 +854,7 @@ const TriangleGame: React.FC = () => {
             <div className="score-card text-center transform hover:scale-105 transition-transform">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Zap className="w-5 h-5 text-warning" />
-                <span className="text-sm font-medium text-white">רצף</span>
+                <span className="text-sm font-medium text-muted-foreground">רצף</span>
               </div>
               <div className="text-2xl font-bold text-warning">
                 {gameState.consecutiveCorrect}
@@ -877,7 +864,7 @@ const TriangleGame: React.FC = () => {
             <div className="score-card text-center transform hover:scale-105 transition-transform">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Star className="w-5 h-5 text-warning" />
-                <span className="text-sm font-medium text-white">כוכבים</span>
+                <span className="text-sm font-medium text-muted-foreground">כוכבים</span>
               </div>
               <div className="flex justify-center">
                 <StarRating stars={gameState.gameOver ? gameState.stars : calculateStars()} />
@@ -900,7 +887,7 @@ const TriangleGame: React.FC = () => {
 
           <div className="relative">
             <div className="text-center mb-6">
-              <p className="text-xl font-semibold text-white bg-white/10 rounded-lg px-4 py-3 border border-white/20">
+              <p className="text-xl font-semibold text-primary bg-primary/10 rounded-lg px-4 py-3 border border-primary/20">
                 📐 סמן את הגובה במשולש הניצב לצלע המודגשת בכתום
               </p>
             </div>
